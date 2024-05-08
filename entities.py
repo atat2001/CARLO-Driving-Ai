@@ -2,7 +2,8 @@ import numpy as np
 from geometry import Point, Rectangle, Circle, Ring
 from typing import Union
 import copy
-
+MINIMUM_SPEED = -30
+MAXIMUM_SPEED = 120
 
 class Entity:
     def __init__(self, center: Point, heading: float, movable: bool = True, friction: float = 0):
@@ -14,16 +15,22 @@ class Entity:
         if movable:
             self.friction = friction
             self.velocity = Point(0,0) # this is xp, yp
+            
+            self.going_forward = True
+            
             self.acceleration = 0 # this is vp (or speedp)
             self.angular_velocity = 0 # this is headingp
             self.inputSteering = 0
             self.inputAcceleration = 0
-            self.max_speed = np.inf
-            self.min_speed = 0
+            self.max_speed = MAXIMUM_SPEED * 10
+            self.min_speed = MINIMUM_SPEED * 10
     
     @property
     def speed(self) -> float:
-        return self.velocity.norm(p = 2) if self.movable else 0
+        aux = self.velocity.norm(p = 2)
+        if self.going_forward == False:
+            aux = -aux
+        return aux if self.movable else 0
     
     def set_control(self, inputSteering: float, inputAcceleration: float):
         self.inputSteering = inputSteering
@@ -46,23 +53,34 @@ class Entity:
         if self.movable:
             speed = self.speed
             heading = self.heading
-        
             # Kinematic bicycle model dynamics based on
             # "Kinematic and Dynamic Vehicle Models for Autonomous Driving Control Design" by
-            # Jason Kong, Mark Pfeiffer, Georg Schildbach, Francesco Borrelli
+            # Jason Kong, Mark Pfeiffer, Georg Sc   hildbach, Francesco Borrelli
             lr = self.rear_dist
             lf = lr # we assume the center of mass is the same as the geometric center of the entity
             beta = np.arctan(lr / (lf + lr) * np.tan(self.inputSteering))
             
             new_angular_velocity = speed * self.inputSteering # this is not needed and used for this model, but let's keep it for consistency (and to avoid if-else statements)
-            new_acceleration = self.inputAcceleration - self.friction
+            if speed >= 0:
+                new_acceleration = self.inputAcceleration - self.friction
+            else:
+                new_acceleration = self.inputAcceleration + self.friction
             new_speed = np.clip(speed + new_acceleration * dt, self.min_speed, self.max_speed)
+
+            if (new_speed < 0 and self.inputAcceleration != 0) or speed < 0:
+                self.going_forward = False
+                print("1")
+            if new_speed > 0:
+                self.going_forward = True
+                print("2")
             new_heading = heading + ((speed + new_speed)/lr)*np.sin(beta)*dt/2.
             angle = (heading + new_heading)/2. + beta
             new_center = self.center + (speed + new_speed)*Point(np.cos(angle), np.sin(angle))*dt / 2.
             new_velocity = Point(new_speed * np.cos(new_heading), new_speed * np.sin(new_heading))
-            
+
+
             '''
+            
             # Point-mass dynamics based on
             # "Active Preference-Based Learning of Reward Functions" by
             # Dorsa Sadigh, Anca D. Dragan, S. Shankar Sastry, Sanjit A. Seshia

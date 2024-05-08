@@ -18,7 +18,10 @@ class Point:
     
     def norm(self, p: int = 2) -> float:
         return (self.x ** p + self.y ** p)**(1./p)
-        
+    
+    def negative_norm(self, p: int = 2) -> float:
+        return -1*(self.x ** p + self.y ** p)**(1./p)
+
     def dot(self, other: 'Point') -> float:
         return self.x * other.x + self.y * other.y
         

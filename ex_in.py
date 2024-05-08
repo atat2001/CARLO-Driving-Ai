@@ -7,18 +7,8 @@ import traceback
 
 human_controller = True
 
-
-"""
-# Let's also add some zebra crossings, because why not.
-w.add(Painting(Point(18, 81), Point(0.5, 2), 'white'))
-w.add(Painting(Point(19, 81), Point(0.5, 2), 'white'))
-w.add(Painting(Point(20, 81), Point(0.5, 2), 'white'))
-w.add(Painting(Point(21, 81), Point(0.5, 2), 'white'))
-w.add(Painting(Point(22, 81), Point(0.5, 2), 'white'))
-"""
-
 dt = 5 # time steps in terms of seconds. In other words, 1/dt is the FPS.
-w = World(dt, width = 240, height = 240, ppm = 3) # The world is 120 meters by 120 meters. ppm is the pixels per meter.
+w = World(dt, width = 360, height = 360, ppm = 2) # The world is 120 meters by 120 meters. ppm is the pixels per meter.
 
 # Let's add some sidewalks and RectangleBuildings.
 # A Painting object is a rectangle that the vehicles cannot collide with. So we use them for the sidewalks.
@@ -35,18 +25,23 @@ w.add(RectangleBuilding(Point(7.5, 107.5), Point(15, 25)))
 w.add(Painting(Point(8.5, 41), Point(17, 82), 'gray80'))
 w.add(RectangleBuilding(Point(7.5, 40), Point(15, 80)))
 
-offset = 5
-w.add(Painting(Point(71.5+5, 41), Point(97+5, 82), 'blue'))
-w.add(RectangleBuilding(Point(72.5+5, 40), Point(95+5, 80)))
+w.add(Painting(Point(71.5, 41), Point(97, 82), 'gray80'))
+w.add(RectangleBuilding(Point(72.5, 40), Point(95, 80)))
 
+# Let's also add some zebra crossings, because why not.
+w.add(Painting(Point(18, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(19, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(20, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(21, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(22, 81), Point(0.5, 2), 'white'))
 
 # A Car object is a dynamic object -- it can move. We construct it using its center location and heading angle.
 c1 = Car(Point(20,20), np.pi/2)
 w.add(c1)
 
-#c2 = Car(Point(118,90), np.pi, 'blue')
-#c2.velocity = Point(1.5,0) # We can also specify an initial velocity just like this.
-#w.add(c2)
+c2 = Car(Point(118,90), np.pi, 'blue')
+c2.velocity = Point(1.5,0) # We can also specify an initial velocity just like this.
+w.add(c2)
 
 # Pedestrian is almost the same as Car. It is a "circle" object rather than a rectangle.
 p1 = Pedestrian(Point(28,81), np.pi)
@@ -69,14 +64,14 @@ if not human_controller:
             c1.set_control(0, -0.02)
         elif k == 325:
             c1.set_control(0, 0.8)
-            #c2.set_control(-0.45, 0.3)
+            c2.set_control(-0.45, 0.3)
         elif k == 367: # The second Car stops turning.
-            continue#c2.set_control(0, 0.1)
+            c2.set_control(0, 0.1)
         w.tick() # This ticks the world for one time step (dt second)
         w.render()
         time.sleep(dt/4) # Let's watch it 4x
 
-        if w.collision_exists(p1): # We can check if the Pedestrian is currently involved in a collision. We could also check c1 or #c2.
+        if w.collision_exists(p1): # We can check if the Pedestrian is currently involved in a collision. We could also check c1 or c2.
             print('Pedestrian has died!')
         elif w.collision_exists(): # Or we can check if there is any collision at all.
             print('Collision exists somewhere...')
@@ -84,7 +79,7 @@ if not human_controller:
 
 else: # Let's use the steering wheel (Logitech G29) for the human control of car c1
     p1.set_control(0, 0.22) # The pedestrian will have 0 steering and 0.22 throttle. So it will not change its direction.
-    #c2.set_control(0, 0.35) 
+    c2.set_control(0, 0.35) 
     
     from interactive_controllers import KeyboardController
     controller = KeyboardController(w)

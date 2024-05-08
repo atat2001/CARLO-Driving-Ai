@@ -2,6 +2,7 @@ from agents import Car, Pedestrian, RectangleBuilding
 from entities import Entity
 from typing import Union
 from visualizer import Visualizer
+import time
 
 class World:
     def __init__(self, dt: float, width: float, height: float, ppm: float = 8):
@@ -10,6 +11,7 @@ class World:
         self.t = 0 # simulation time
         self.dt = dt # simulation time step
         self.visualizer = Visualizer(width, height, ppm=ppm)
+        self.last_tick_time = time.time()
         
     def add(self, entity: Entity):
         if entity.movable:
@@ -18,8 +20,11 @@ class World:
             self.static_agents.append(entity)
         
     def tick(self):
+        current_time = time.time()
+        elapsed_time = current_time - self.last_tick_time
+        self.last_tick_time = current_time
         for agent in self.dynamic_agents:
-            agent.tick(self.dt)
+            agent.tick(self.dt * (elapsed_time))
         self.t += self.dt
     
     def render(self):
@@ -49,6 +54,19 @@ class World:
             if self.agents[i] is not agent and self.agents[i].collidable and agent.collidesWith(self.agents[i]):
                 return True
         return False
+    
+    def get_collisions(self):
+        collisions = []
+        for i in range(len(self.dynamic_agents)):
+            for j in range(i+1, len(self.dynamic_agents)):
+                if self.dynamic_agents[i].collidable and self.dynamic_agents[j].collidable:
+                    if self.dynamic_agents[i].collidesWith(self.dynamic_agents[j]):
+                        collisions.append((self.dynamic_agents[i], self.dynamic_agents[j]))
+            for j in range(len(self.static_agents)):
+                if self.dynamic_agents[i].collidable and self.static_agents[j].collidable:
+                    if self.dynamic_agents[i].collidesWith(self.static_agents[j]):
+                        collisions.append((self.dynamic_agents[i], self.static_agents[j]))
+        return collisions
     
     def close(self):
         self.reset()
