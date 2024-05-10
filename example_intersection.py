@@ -18,7 +18,7 @@ w.add(Painting(Point(22, 81), Point(0.5, 2), 'white'))
 """
 
 dt = 5 # time steps in terms of seconds. In other words, 1/dt is the FPS.
-w = World(dt, width = 240, height = 240, ppm = 3) # The world is 120 meters by 120 meters. ppm is the pixels per meter.
+w = World(dt, width = 400, height = 300, ppm = 3) # The world is 120 meters by 120 meters. ppm is the pixels per meter.
 
 # Let's add some sidewalks and RectangleBuildings.
 # A Painting object is a rectangle that the vehicles cannot collide with. So we use them for the sidewalks.
@@ -35,9 +35,9 @@ w.add(RectangleBuilding(Point(7.5, 107.5), Point(15, 25)))
 w.add(Painting(Point(8.5, 41), Point(17, 82), 'gray80'))
 w.add(RectangleBuilding(Point(7.5, 40), Point(15, 80)))
 
-offset = 5
-w.add(Painting(Point(71.5+5, 41), Point(97+5, 82), 'blue'))
-w.add(RectangleBuilding(Point(72.5+5, 40), Point(95+5, 80)))
+offset = 6
+w.add(Painting(Point(71.5+offset, 41), Point(97+offset, 82), 'blue'))
+w.add(RectangleBuilding(Point(72.5+offset, 40), Point(95+offset, 80)))
 
 
 # A Car object is a dynamic object -- it can move. We construct it using its center location and heading angle.
