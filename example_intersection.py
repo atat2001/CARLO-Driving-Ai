@@ -4,7 +4,7 @@ from agents import Car, RectangleBuilding, Pedestrian, Painting
 from geometry import Point
 import time
 import traceback
-
+from autonomous_agents import Greedy
 human_controller = True
 
 
@@ -19,7 +19,7 @@ w.add(Painting(Point(22, 81), Point(0.5, 2), 'white'))
 
 dt = 5 # time steps in terms of seconds. In other words, 1/dt is the FPS.
 w = World(dt, width = 400, height = 300, ppm = 3) # The world is 120 meters by 120 meters. ppm is the pixels per meter.
-
+autonomous_list = []
 # Let's add some sidewalks and RectangleBuildings.
 # A Painting object is a rectangle that the vehicles cannot collide with. So we use them for the sidewalks.
 # A RectangleBuilding object is also static -- it does not move. But as opposed to Painting, it can be collided with.
@@ -44,9 +44,11 @@ w.add(RectangleBuilding(Point(72.5+offset, 40), Point(95+offset, 80)))
 c1 = Car(Point(20,20), np.pi/2)
 w.add(c1)
 
-#c2 = Car(Point(118,90), np.pi, 'blue')
+c2 = Car(Point(118,90), np.pi, 'blue')
+
+autonomous_list.append(Greedy(c2,[[1,2,3]]))
 #c2.velocity = Point(1.5,0) # We can also specify an initial velocity just like this.
-#w.add(c2)
+w.add(c2)
 
 # Pedestrian is almost the same as Car. It is a "circle" object rather than a rectangle.
 p1 = Pedestrian(Point(28,81), np.pi)
@@ -56,6 +58,7 @@ w.add(p1)
 w.render() # This visualizes the world we just constructed.
 
 
+## nunca entra aqui
 if not human_controller:
     # Let's implement some simple scenario with all agents
     p1.set_control(0, 0.22) # The pedestrian will have 0 steering and 0.22 throttle. So it will not change its direction.
@@ -88,11 +91,14 @@ else: # Let's use the steering wheel (Logitech G29) for the human control of car
     
     from interactive_controllers import KeyboardController
     controller = KeyboardController(w)
-    for k in range(400):
+    while True:
         c1.set_control(controller.steering, controller.throttle)
+        for aut in autonomous_list:
+            aut.update()
         w.tick() # This ticks the world for one time step (dt second)
         w.render()
-        time.sleep(dt/100) # Let's watch it 4x
-
+        time.sleep(dt/200) # Let's watch it 4x
+        
         if w.collision_exists():
             print('Collision exists somewhere...')
+            
