@@ -2,6 +2,7 @@ from agents import Car, Pedestrian, RectangleBuilding
 from entities import Entity
 from typing import Union
 from visualizer import Visualizer
+from enum import Enum
 import time
 
 class World:
@@ -77,3 +78,54 @@ class World:
     def reset(self):
         self.dynamic_agents = []
         self.t = 0
+
+class TypeObj(Enum):
+    LANE_START = 0
+    INTERSECTION_START = 1
+    INTERSECTION_DECISION = 2
+    INTERSECTION_END = 3
+
+class Objective:
+    def __init__(self, position, heading, type_obj, intersection):
+        self.position = position
+        self.heading = heading
+        self.type_obj = type_obj
+        self.intersection = intersection
+
+class lane:
+    def __init__(self, lane_start, intersection_start, decision, end):
+        self.lane_start = lane_start
+        self.intersection_start = intersection_start
+        self.decision = decision
+        self.end = end
+
+class intersection:
+    def __init__(self, lanes, phases):
+        self.lanes = lanes
+        self.phases = phases
+        self.move_to_phases = dict() # todo
+        self.cars = []
+    
+    def add_car(self, car):
+        self.cars += [car]
+        self.increment_phases(car)
+
+    def remove_car(self, car):
+        # todo
+        if(self.phases.get(car.get_phase(), None) != None):
+            for phase in self.move_to_phases[car.get_target_lane()]:
+                phase += 1
+
+    def get_max_phase(self):
+        # todo
+        return 
+        #for phase in self.phases:
+
+    def increment_phases(self, car):
+        # todo
+        if(phases.get(car.get_phase(), None) != None):
+            for phase in self.move_to_phases[car.get_target_lane()]:
+                phase += 1
+                
+            
+        

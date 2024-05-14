@@ -3,20 +3,9 @@ from enum import Enum
 
 LANE_DISTANCE = 5
 GOAL_RADIUS = 2
-SIDE_TURN = np.pi/15
-class TypeObj(Enum):
-    INTERSECTION_START = 1
-    INTERSECTION_DECISION = 2
-    INTERSECTION_END = 3
+SIDE_TURN = np.pi/10
 
-class objective:
-    def __init__(self, position, heading, type_obj, intersection):
-        self.position = position
-        self.heading = heading
-        self.type_obj = type_obj
-        self.intersection = intersection
-
-class Greedy:
+class Autonomous_agent:
     def __init__(self, car, path):
         self.i = 1
         self.path = path
@@ -92,8 +81,7 @@ class Greedy:
             distance[1] = 0
         return distance
 
-    def get_best_movement(self):
-        # np.mod(, 2*np.pi)
+    def turn_handler(self):
         if self.turning[0]: # turning left
             angle = np.mod(self.old_heading-self.car.heading, 2*np.pi)
             if angle > np.pi:
@@ -114,7 +102,19 @@ class Greedy:
                 self.turning[1] = False
                 self._turn_0()
 
+    def get_best_movement(self):
+        print("Autonomous_agent: get_best_movement not implemented for this class")
 
+    def update(self):
+        print("Autonomous_agent: update not implemented for this class")
+
+class Greedy(Autonomous_agent):
+    def __init__(self, car, path):
+        super().__init__(car, path)
+    ##### greedy things
+    def get_best_movement(self):
+        # np.mod(, 2*np.pi)
+        self.turn_handler()
         d = self.get_distance()
         if d[0] > d[1]:
             self.accelerate()
@@ -131,7 +131,7 @@ class Greedy:
     def mock_update(self):
         if(self.i == 1 and self.turning[0] == False and self.turning[1] == False):
             self.i = self.i + 1
-            self.do_left_turn()
+            #self.do_left_turn()
         if(self.i == 2 and self.turning[0] == False and self.turning[1] == False):
             self.i = 2
             self.do_right_turn()

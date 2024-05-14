@@ -4,7 +4,7 @@ try:
 except ImportError:
     print('pygame is not installed, you won\'t be able to use the steering wheel.')
 
-SIDE_TURN = np.pi/15
+SIDE_TURN = np.pi/10
 
 class KeyboardController:
     def __init__(self, world):
@@ -50,7 +50,6 @@ class KeyboardController:
     def arrow_left_release(self, event):
         self.steering = 0
     def arrow_right_release(self, event):
-        print("released")
         self.steering = 0
         
     def arrow_up_press(self, event):

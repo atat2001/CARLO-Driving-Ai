@@ -21,8 +21,6 @@ dt = 5 # time steps in terms of seconds. In other words, 1/dt is the FPS.
 w = World(dt, width = 300, height = 200, ppm = 3) # The world is 120 meters by 120 meters. ppm is the pixels per meter.
 autonomous_list = []
 
-# Time steps (s)
-dt = 5 
 
 # Sidewalks
 offset = 60
@@ -67,7 +65,8 @@ world.add(Painting(Point(226, 148), Point(55, 19), 'gray80')) #7
 world.add(Painting(Point(165, 201), Point(300, 49), 'gray80'))
 world.add(RectangleBuilding(Point(150, 220), Point(305, 82)))
 
-#9
+#9# Time steps (s)
+dt = 5 
 world.add(Painting(Point(7 + offset, 147), Point(17 + offset, 30), 'gray80')) 
 world.add(RectangleBuilding(Point(5.5 + offset + line, 145.5 + line), Point(13.5 + offset - line, 26.5-line)))
 
@@ -99,7 +98,8 @@ w.add(c2)
 
 # Pedestrian is almost the same as Car. It is a "circle" object rather than a rectangle.
 p1 = Pedestrian(Point(28,81), np.pi)
-p1.max_speed = 10.0 # We can specify min_speed and max_speed of a Pedestrian (and of a Car). This is 10 m/s, almost Usain Bolt.
+p1 = Pedestrian(Point(28,81), np.pi)
+p1 = Pedestrian(Point(28,81), np.pi)
 w.add(p1)
 
 w.render() # This visualizes the world we just constructed.
