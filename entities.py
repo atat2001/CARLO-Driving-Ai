@@ -12,6 +12,7 @@ class Entity:
         self.movable = movable
         self.color = 'ghost white'
         self.collidable = True
+        self.debug = False
         if movable:
             self.friction = friction
             self.velocity = Point(0,0) # this is xp, yp
@@ -22,8 +23,8 @@ class Entity:
             self.angular_velocity = 0 # this is headingp
             self.inputSteering = 0
             self.inputAcceleration = 0
-            self.max_speed = MAXIMUM_SPEED/10
-            self.min_speed = MINIMUM_SPEED/10
+            self.max_speed = MAXIMUM_SPEED/50
+            self.min_speed = MINIMUM_SPEED/50
     
     @property
     def speed(self) -> float:
@@ -59,7 +60,8 @@ class Entity:
             lr = self.rear_dist
             lf = lr # we assume the center of mass is the same as the geometric center of the entity
             beta = np.arctan(lr / (lf + lr) * np.tan(self.inputSteering))
-            
+            if self.debug:
+                print(f"heading:{self.heading} center: {self.center}")
             
             new_angular_velocity = speed * self.inputSteering # this is not needed and used for this model, but let's keep it for consistency (and to avoid if-else statements)
             
@@ -96,7 +98,7 @@ class Entity:
                     speed = 0
                     new_speed = 0
                     self.going_forward = False
-                    print("0 speed")
+                    #print("0 speed")
                 else:
                     if(speed + new_speed) > 0:
                         self.going_forward = True

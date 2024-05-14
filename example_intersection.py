@@ -88,17 +88,52 @@ if not human_controller:
 else: # Let's use the steering wheel (Logitech G29) for the human control of car c1
     p1.set_control(0, 0.22) # The pedestrian will have 0 steering and 0.22 throttle. So it will not change its direction.
     #c2.set_control(0, 0.35) 
-    
     from interactive_controllers import KeyboardController
     controller = KeyboardController(w)
+    #autonomous_list[0].do_left_turn()
     while True:
+
         c1.set_control(controller.steering, controller.throttle)
         for aut in autonomous_list:
-            aut.update()
+            aut.mock_update()
         w.tick() # This ticks the world for one time step (dt second)
         w.render()
-        time.sleep(dt/200) # Let's watch it 4x
-        
+        time.sleep(dt/4000) # Isto é tipo a accuracy das coisas, quanto maior for esse numero mais updates dá
         if w.collision_exists():
             print('Collision exists somewhere...')
             
+
+
+
+
+
+
+""" not needed anymore
+    #points = [[118,90],[],[],[]]
+        if a and abs(c2.heading -np.pi) < 0.0005:
+            z = z + 1
+            if z == 10:
+                for x in range(len(points)-1):
+                    print([points[x+1][0] - points[x][0], points[x+1][1] - points[x][1]])
+                print([points[0][0] - points[3][0], points[0][1] - points[3][1]])
+                print(points)
+                print("done")
+                exit()
+        if abs(c2.heading -(np.pi/2)) < 0.0005:
+            i = 3
+            if points[i] == []:
+                points[i] = [c2.center.x,c2.center.y]
+            points[i] = [(c2.center.x+points[i][0])/2,(c2.center.y+points[i][1])/2]
+
+        if abs(c2.heading -(3*np.pi/2)) < 0.0005:
+            i = 1
+            if points[i] == []:
+                points[i] = [c2.center.x,c2.center.y]
+            points[i] = [(c2.center.x+points[i][0])/2,(c2.center.y+points[i][1])/2]
+
+        if abs(c2.heading) < 0.0005:
+            i = 2
+            if points[i] == []:
+                points[i] = [c2.center.x,c2.center.y]
+            points[i] = [(c2.center.x+points[i][0])/2,(c2.center.y+points[i][1])/2]
+"""
