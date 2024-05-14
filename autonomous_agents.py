@@ -4,7 +4,6 @@ from enum import Enum
 LANE_DISTANCE = 5
 GOAL_RADIUS = 2
 SIDE_TURN = np.pi/15
-
 class TypeObj(Enum):
     INTERSECTION_START = 1
     INTERSECTION_DECISION = 2
@@ -19,6 +18,7 @@ class objective:
 
 class Greedy:
     def __init__(self, car, path):
+        self.i = 1
         self.path = path
         self.cur_goal = 0
         self.car = car
@@ -63,7 +63,7 @@ class Greedy:
         self._turn_left()
 
     def do_right_turn(self):
-        self.turning = [True, False]
+        self.turning = [False, True]
         self.old_heading = self.car.heading
         self._turn_right()
 
@@ -108,7 +108,9 @@ class Greedy:
             if angle > np.pi:
                 angle = (2 * np.pi) - angle
             if angle > np.pi/2:
-                self.car.heading = np.mod(self.old_heading - np.pi/2, 2*np.pi)
+                self.car.heading = self.old_heading - np.pi/2
+                if self.car.heading < 0:
+                    self.car.heading+= 2*np.pi
                 self.turning[1] = False
                 self._turn_0()
 
@@ -127,8 +129,13 @@ class Greedy:
         self.car.set_control(self.steering, self.throttle)
 
     def mock_update(self):
-        if(self.turning[0] == False):
+        if(self.i == 1 and self.turning[0] == False and self.turning[1] == False):
+            self.i = self.i + 1
             self.do_left_turn()
+        if(self.i == 2 and self.turning[0] == False and self.turning[1] == False):
+            self.i = 2
+            self.do_right_turn()
+
         self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)
 

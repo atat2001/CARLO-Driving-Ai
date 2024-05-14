@@ -2,7 +2,7 @@ import numpy as np
 from geometry import Point, Rectangle, Circle, Ring
 from typing import Union
 import copy
-MINIMUM_SPEED = -30
+MINIMUM_SPEED = -300
 MAXIMUM_SPEED = 1200
 
 class Entity:

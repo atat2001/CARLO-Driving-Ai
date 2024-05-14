@@ -18,27 +18,74 @@ w.add(Painting(Point(22, 81), Point(0.5, 2), 'white'))
 """
 
 dt = 5 # time steps in terms of seconds. In other words, 1/dt is the FPS.
-w = World(dt, width = 400, height = 300, ppm = 3) # The world is 120 meters by 120 meters. ppm is the pixels per meter.
+w = World(dt, width = 300, height = 200, ppm = 3) # The world is 120 meters by 120 meters. ppm is the pixels per meter.
 autonomous_list = []
-# Let's add some sidewalks and RectangleBuildings.
-# A Painting object is a rectangle that the vehicles cannot collide with. So we use them for the sidewalks.
-# A RectangleBuilding object is also static -- it does not move. But as opposed to Painting, it can be collided with.
-# For both of these objects, we give the center point and the size.
 
-w.add(Painting(Point(71.5, 106.5), Point(97, 27), 'gray80')) # We build a sidewalk.
-w.add(RectangleBuilding(Point(72.5, 107.5), Point(95, 25))) # The RectangleBuilding is then on top of the sidewalk, with some margin.
+# Time steps (s)
+dt = 5 
 
-# Let's repeat this for 4 different RectangleBuildings.
-w.add(Painting(Point(8.5, 106.5), Point(17, 27), 'pink'))
-w.add(RectangleBuilding(Point(7.5, 107.5), Point(15, 25)))
+# Sidewalks
+offset = 60
+line = 1.5
+world = w
 
-w.add(Painting(Point(8.5, 41), Point(17, 82), 'gray80'))
-w.add(RectangleBuilding(Point(7.5, 40), Point(15, 80)))
+dif_via = 5.5 # Length diferença entre vias (teste)
 
-offset = 6
-w.add(Painting(Point(71.5+offset, 41), Point(97+offset, 82), 'blue'))
-w.add(RectangleBuilding(Point(72.5+offset, 40), Point(95+offset, 80)))
 
+''' 
+BLOCKS 
+Comentário: já tiro o offset e lines para depois ser mais fácil vermos os limites à volta de cada intersection. 
+Foi só mais fácil para mim no inicio para ver distancias e quês.
+Also nao vale a pena por isto bonito, vai ficar assim
+'''
+
+#1
+world.add(Painting(Point(8, 125.5), Point(17, 127), 'gray80'))
+world.add(RectangleBuilding(Point(8 - line, 125.5 + line), Point(17 - line, 127 - line)))
+
+#2
+world.add(Painting(Point(7+offset, 90.5), Point(17+offset, 57), 'gray80')) 
+world.add(RectangleBuilding(Point(5.5 + offset + line, 89 + line), Point(13.5 + offset - line, 53.5 - line))) 
+
+#3
+world.add(Painting(Point(8, 7 + line), Point(17, 82 + line), 'gray80'))
+world.add(RectangleBuilding(Point(8 - line, 7), Point(17 - line, 82)))
+
+#4
+world.add(Painting(Point(146, 49.5), Point(55, 127), 'gray80')) 
+world.add(RectangleBuilding(Point(144.5 + line, 48 + line), Point(51.5 - line, 123.5 - line))) 
+
+#5
+world.add(Painting(Point(14.5 + offset, 7 + line), Point(30 + offset + line, 82 + line), 'gray80'))
+world.add(RectangleBuilding(Point(14.5 + offset+line, 7), Point(30 + offset, 82)))
+
+# 6 e 7
+world.add(Painting(Point(146, 163), Point(55, 49), 'gray80')) #6
+world.add(Painting(Point(226, 148), Point(55, 19), 'gray80')) #7
+
+#8
+world.add(Painting(Point(165, 201), Point(300, 49), 'gray80'))
+world.add(RectangleBuilding(Point(150, 220), Point(305, 82)))
+
+#9
+world.add(Painting(Point(7 + offset, 147), Point(17 + offset, 30), 'gray80')) 
+world.add(RectangleBuilding(Point(5.5 + offset + line, 145.5 + line), Point(13.5 + offset - line, 26.5-line)))
+
+# 6 e 7
+world.add(RectangleBuilding(Point(144.5 + line, 161.5 + line), Point(51.5 - line, 45.5-line))) #6
+world.add(RectangleBuilding(Point(224.5 + line, 146.5 + line), Point(51.5 - line, 15.5-line))) #7
+
+#10
+world.add(Painting(Point(226, 79.5), Point(55, 67), 'gray80')) 
+world.add(RectangleBuilding(Point(224.5 + line, 78 + line), Point(51.5 - line, 63.5-line))) 
+
+#11
+world.add(Painting(Point(178 + offset + line, 4 + line), Point(70 + offset + line, 43 + line), 'gray80'))
+world.add(RectangleBuilding(Point(175 + offset + line, 4), Point(70 + offset + line, 43)))
+
+#12
+world.add(Painting(Point(291, 102), Point(25, 153.5), 'gray80'))
+world.add(RectangleBuilding(Point(291 + line, 102.5), Point(25 - line*1.5, 154.5)))
 
 # A Car object is a dynamic object -- it can move. We construct it using its center location and heading angle.
 c1 = Car(Point(20,20), np.pi/2)
