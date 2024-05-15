@@ -87,6 +87,10 @@ world.render()
 # Teste Cars
 c1 = Car(Point(20, 20), np.pi/2)
 
+# 0
+c2 = Car(Point(20, 3), np.pi/2)
+c3 = Car(Point(20 + dif_via, 3), np.pi/2)
+
 # 1
 c2 = Car(Point(15, 53), np.pi)
 c3 = Car(Point(15, 53 + dif_via), np.pi)
@@ -122,24 +126,137 @@ c3 = Car(Point(20 + dif_via, 160), np.pi/2)
 # 9
 c2 = Car(Point(31, 166), np.pi)
 c3 = Car(Point(31, 166 + dif_via), np.pi)
- 
+
+# 10
+c2 = Car(Point(104, 166), np.pi)
+c3 = Car(Point(104, 166 + dif_via), np.pi)
+
+# 11
+c2 = Car(Point(109.5, 160), np.pi/2)
+c3 = Car(Point(109.5 + dif_via, 160), np.pi/2)
+
+# 12
+c2 = Car(Point(109.5, 140), np.pi/2)
+c3 = Car(Point(109.5 + dif_via, 140), np.pi/2)
+
+# 13
+c2 = Car(Point(104, 122.5), np.pi)
+c3 = Car(Point(104, 122.5 + dif_via), np.pi)
+
+# 14
+c2 = Car(Point(109.5, 111), np.pi/2)
+c3 = Car(Point(109.5 + dif_via, 111), np.pi/2)
+
+# 15
+c2 = Car(Point(109.5, 64), np.pi/2)
+c3 = Car(Point(109.5 + dif_via, 64), np.pi/2)
+
+# 16
+c2 = Car(Point(104, 53), np.pi)
+c3 = Car(Point(104, 53 + dif_via), np.pi)
+
+# 17
+c2 = Car(Point(121, 112 + dif_via), np.pi)
+c3 = Car(Point(121, 112 + dif_via*2), np.pi)
+c4 = Car(Point(121, 112 + dif_via*3), np.pi)
+c5 = Car(Point(121, 112 + dif_via*4), np.pi)
+
+# 18
+c2 = Car(Point(172, 112 + dif_via), np.pi)
+c3 = Car(Point(172, 112 + dif_via*2), np.pi)
+c4 = Car(Point(172, 112 + dif_via*3), np.pi)
+c5 = Car(Point(172, 112 + dif_via*4), np.pi)
+
+# 19
+c2 = Car(Point(172.5 + dif_via, 111), np.pi/2)
+c3 = Car(Point(172.5 + dif_via*2, 111), np.pi/2)
+c4 = Car(Point(172.5 + dif_via*3, 111), np.pi/2)
+c5 = Car(Point(172.5 + dif_via*4, 111), np.pi/2)
+
+# 20
+c2 = Car(Point(200.5, 112 + dif_via), np.pi)
+c3 = Car(Point(200.5, 112 + dif_via*2), np.pi)
+c4 = Car(Point(200.5, 112 + dif_via*3), np.pi)
+c5 = Car(Point(200.5, 112 + dif_via*4), np.pi)
+
+# 21
+c2 = Car(Point(172.5 + dif_via, 140), np.pi/2)
+c3 = Car(Point(172.5 + dif_via*2, 140), np.pi/2)
+c4 = Car(Point(172.5 + dif_via*3, 140), np.pi/2)
+c5 = Car(Point(172.5 + dif_via*4, 140), np.pi/2)
+
+# 22
+c2 = Car(Point(172.5 + dif_via, 155), np.pi/2)
+c3 = Car(Point(172.5 + dif_via*2, 155), np.pi/2)
+c4 = Car(Point(172.5 + dif_via*3, 155), np.pi/2)
+c5 = Car(Point(172.5 + dif_via*4, 155), np.pi/2)
+
+# 23
+c2 = Car(Point(200.5, 156 + dif_via), np.pi)
+c3 = Car(Point(200.5, 156 + dif_via*2), np.pi)
+c4 = Car(Point(200.5, 156 + dif_via*3), np.pi)
+c5 = Car(Point(200.5, 156 + dif_via*4), np.pi)
+
+# 24
+c2 = Car(Point(251.5, 156 + dif_via), np.pi)
+c3 = Car(Point(251.5, 156 + dif_via*2), np.pi)
+c4 = Car(Point(251.5, 156 + dif_via*3), np.pi)
+c5 = Car(Point(251.5, 156 + dif_via*4), np.pi)
+
+# 25
+c2 = Car(Point(252.5 + dif_via, 155), np.pi/2)
+c3 = Car(Point(252.5 + dif_via*2, 155), np.pi/2)
+c4 = Car(Point(252.5 + dif_via*3, 155), np.pi/2)
+c5 = Car(Point(252.5 + dif_via*4, 155), np.pi/2)
+
+# 26
+c2 = Car(Point(252.5 + dif_via, 140), np.pi/2)
+c3 = Car(Point(252.5 + dif_via*2, 140), np.pi/2)
+c4 = Car(Point(252.5 + dif_via*3, 140), np.pi/2)
+c5 = Car(Point(252.5 + dif_via*4, 140), np.pi/2)
+
+# 27
+c2 = Car(Point(251.5, 112 + dif_via), np.pi)
+c3 = Car(Point(251.5, 112 + dif_via*2), np.pi)
+c4 = Car(Point(251.5, 112 + dif_via*3), np.pi)
+c5 = Car(Point(251.5, 112 + dif_via*4), np.pi)
+
+# 28
+c2 = Car(Point(252.5 + dif_via, 111), np.pi/2)
+c3 = Car(Point(252.5 + dif_via*2, 111), np.pi/2)
+c4 = Car(Point(252.5 + dif_via*3, 111), np.pi/2)
+c5 = Car(Point(252.5 + dif_via*4, 111), np.pi/2)
+
+# 29
+c2 = Car(Point(252.5 + dif_via, 48), np.pi/2)
+c3 = Car(Point(252.5 + dif_via*2, 48), np.pi/2)
+c4 = Car(Point(252.5 + dif_via*3, 48), np.pi/2)
+c5 = Car(Point(252.5 + dif_via*4, 48), np.pi/2)
+
+# 30
+c2 = Car(Point(251.5, 19.5 + dif_via), np.pi)
+c3 = Car(Point(251.5, 19.5 + dif_via*2), np.pi)
+c4 = Car(Point(251.5, 19.5 + dif_via*3), np.pi)
+c5 = Car(Point(251.5, 19.5 + dif_via*4), np.pi)
+
+# 31
+c2 = Car(Point(200.5, 19.5 + dif_via), np.pi)
+c3 = Car(Point(200.5, 19.5 + dif_via*2), np.pi)
+c4 = Car(Point(200.5, 19.5 + dif_via*3), np.pi)
+c5 = Car(Point(200.5, 19.5 + dif_via*4), np.pi)
+
+# 19
+c2 = Car(Point(172.5 + dif_via, 48), np.pi/2)
+c3 = Car(Point(172.5 + dif_via*2, 48), np.pi/2)
+c4 = Car(Point(172.5 + dif_via*3, 48), np.pi/2)
+c5 = Car(Point(172.5 + dif_via*4, 48), np.pi/2)
 
 
 world.add(c1)
 world.add(c2)
 world.add(c3)
-
-
-'''c4 = Car(Point(172.5 + dif_via, 150), np.pi/2)
-c5 = Car(Point(172.5 + dif_via*2, 150), np.pi/2)
-c6 = Car(Point(172.5 + dif_via*3, 150), np.pi/2)
-c7 = Car(Point(172.5 + dif_via*4, 150), np.pi/2)
-
 world.add(c4)
 world.add(c5)
-world.add(c6)
-world.add(c7)
-'''
 
 
 # Move C1 -> example_intersection.py 
