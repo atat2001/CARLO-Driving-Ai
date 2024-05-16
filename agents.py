@@ -14,12 +14,13 @@ class Car(RectangleEntity):
         
 class Pedestrian(CircleEntity):
     def __init__(self, center: Point, heading: float, color: str = 'pink'): # after careful consideration, I decided my color is the same as a salmon, so here we go.
-        radius = 1
+        radius = 3
         movable = False
         friction = 0.2
         super(Pedestrian, self).__init__(center, heading, radius, movable, friction)
         self.color = color
         self.collidable = True
+
         
 class RectangleBuilding(RectangleEntity):
     def __init__(self, center: Point, size: Point, color: str = 'gray26'):

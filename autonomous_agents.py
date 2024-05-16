@@ -7,11 +7,11 @@ GOAL_RADIUS = 2
 SIDE_TURN = np.pi/10
 
 TURN_FRONT = 5.36
-
+dif_via = 5.5 ## 'put some diferent way
 class Autonomous_agent:
     def __init__(self, car, path):
         self.i = 1
-        self.path = path
+        self.path = [[car.center.x, car.center.y]] + self.create_path(path)
         self.cur_goal = 1
         self.car = car
         self.car.debug = False
@@ -27,6 +27,63 @@ class Autonomous_agent:
     def throttle(self):
         #print("going vruuum")
         return self._throttle
+
+    def create_path(self, path):
+        roads = {"0":[[20 + dif_via, 3], [20 + dif_via, 48]],
+            "1":[[31, 53], [104, 53]],
+            "2":[[104, 53 + dif_via],[31, 53 + dif_via]],
+            "3":[[20 + dif_via, 64],[20 + dif_via, 117]],
+            "4":[[20, 117],[20, 64]],
+            "5":[[5, 53],[15, 53]],
+            "6":[[15, 53 + dif_via],[5, 53 + dif_via]],
+            "7":[[20, 48],[20, 3]],
+            "8":[[109.5 + dif_via, 64],[109.5 + dif_via, 111]],
+            "9":[[109.5, 111],[109.5, 64]],
+            "10":[[31, 122.5],[104, 122.5]],
+            "11":[[104, 122.5 + dif_via],[31, 122.5 + dif_via]],
+            "12":[[20 + dif_via, 134],[20 + dif_via, 160]],
+            "13":[[20, 160],[20, 134]],
+            "14":[[31, 166],[104, 166]],
+            "15":[[104, 166 + dif_via],[31, 166 + dif_via]],
+            "16":[[109.5 + dif_via, 140],[109.5 + dif_via, 160]],
+            "17":[[109.5, 160],[109.5, 140]],
+            "18":[[172, 112 + dif_via*4],[121, 112 + dif_via*4]],
+            "19":[[172, 112 + dif_via*3],[121, 112 + dif_via*3]],
+            "20":[[121, 112 + dif_via*2],[172, 112 + dif_via*2]],
+            "21":[[121, 112 + dif_via*1],[172, 112 + dif_via*1]],
+            "22":[[172.5 + dif_via, 111],[172.5 + dif_via, 48]],
+            "23":[[172.5 + dif_via*2, 111],[172.5 + dif_via*2, 48]],
+            "24":[[172.5 + dif_via*3, 48],[172.5 + dif_via*3, 111]],
+            "25":[[172.5 + dif_via*4, 48],[172.5 + dif_via*4, 111]],
+            "26":[[200.5, 112 + dif_via],[251.5, 112 + dif_via]],
+            "27":[[200.5, 112 + dif_via*2],[251.5, 112 + dif_via*2]],
+            "28":[[251.5, 112 + dif_via*3],[200.5, 112 + dif_via*3]],
+            "29":[[251.5, 112 + dif_via*4],[200.5, 112 + dif_via*4]],
+            "30":[[172.5 + dif_via*4, 140],[172.5 + dif_via*4, 155]],
+            "31":[[172.5 + dif_via*3, 140],[172.5 + dif_via*3, 155]],
+            "32":[[172.5 + dif_via*2, 155],[172.5 + dif_via*2, 140]],
+            "33":[[172.5 + dif_via, 155],[172.5 + dif_via, 140]],
+            "34":[[200.5, 156 + dif_via],[251.5, 156 + dif_via]],
+            "35":[[200.5, 156 + dif_via*2],[251.5, 156 + dif_via*2]],
+            "36":[[251.5, 156 + dif_via*3],[200.5, 156 + dif_via*3]],
+            "37":[[251.5, 156 + dif_via*4],[200.5, 156 + dif_via*4]],
+            "38":[[252.5 + dif_via, 155],[252.5 + dif_via, 140]],
+            "39":[[252.5 + dif_via*2, 155],[252.5 + dif_via*2, 140]],
+            "40":[[252.5 + dif_via*3, 140],[252.5 + dif_via*3, 155]],
+            "41":[[252.5 + dif_via*4, 140],[252.5 + dif_via*4, 155]],
+            "42":[[252.5 + dif_via, 111],[252.5 + dif_via, 48]],
+            "43":[[252.5 + dif_via*2, 111],[252.5 + dif_via*2, 48]],
+            "44":[[252.5 + dif_via*3, 48],[252.5 + dif_via*3, 111]],
+            "45":[[252.5 + dif_via*4, 48],[252.5+ dif_via*4, 111]],
+            "46":[[251.5, 19.5 + dif_via*4],[200.5, 19.5 + dif_via*4]],
+            "47":[[251.5, 19.5 + dif_via*3],[200.5, 19.5 + dif_via*3]],
+            "48":[[200.5, 19.5 + dif_via*2],[251.5, 19.5 + dif_via*2]],
+            "49":[[200.5, 19.5 + dif_via],[251.5, 19.5 + dif_via]],
+        }
+        returner = [roads[path[0]][1]]
+        for i in path[1:]:
+            returner += roads[i]
+        return returner
 
     @steering.setter
     def steering(self, val):
@@ -213,13 +270,19 @@ class Greedy(Autonomous_agent):
             self.accelerate()
 
     def update(self):
+        print(self.car.center)
+        print(self.get_next_goal())
+
         self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)
 
     def mock_update(self):
+        print(self.get_next_goal())
         self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)
 
 
 class Passive(Autonomous_agent):
+    def __init__(self, car, path):
+        super().__init__(car, path)
 ## Curvas: o agente a virar para a esquerda andara 5.32 unidades para a frente e 9.32 para a esquerda.

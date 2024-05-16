@@ -1,4 +1,6 @@
 from graphics import *
+import geometry
+import graphics
 from entities import RectangleEntity, CircleEntity, RingEntity
 
 class Visualizer:
@@ -40,6 +42,8 @@ class Visualizer:
                     img = Circle(Point(self.ppm*agent.center.x, self.display_height - self.ppm*agent.center.y), self.ppm*agent.radius)
                 elif isinstance(agent, RingEntity):
                     img = CircleRing(Point(self.ppm*agent.center.x, self.display_height - self.ppm*agent.center.y), self.ppm*agent.inner_radius, self.ppm*agent.outer_radius)
+                elif isinstance(agent, geometry.Line):
+                    img = graphics.Line(graphics.Point(self.ppm*agent.p1.x,self.display_height-self.ppm*agent.p1.y), graphics.Point(self.ppm*agent.p2.x,self.display_height-self.ppm*agent.p2.y))
                 else:
                     raise NotImplementedError
                 img.setFill(agent.color)

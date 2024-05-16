@@ -1,10 +1,12 @@
 # Imports
 import numpy as np
 from world import World
-from agents import Car, RectangleBuilding, Painting
-from geometry import Point
+from agents import Car, RectangleBuilding, Painting, Pedestrian
+from geometry import Point, Line
 import time
+from autonomous_agents import Greedy
 
+DEBUG_ROAD_LINES = False # used to debug road lines
 
 # Time steps (s)
 dt = 5 
@@ -78,201 +80,93 @@ world.add(RectangleBuilding(Point(175 + offset + line, 4), Point(70 + offset + l
 world.add(Painting(Point(291, 101), Point(25, 164.5), 'gray80'))
 world.add(RectangleBuilding(Point(291 + line, 100.5), Point(25 - line*1.5, 175.5)))
 
-world.render()
-
 
 
 ''' TESTES '''
 
+roads = {"0":[[20 + dif_via, 3], [20 + dif_via, 48]],
+        "1":[[31, 53], [104, 53]],
+        "2":[[104, 53 + dif_via],[31, 53 + dif_via]],
+        "3":[[20 + dif_via, 64],[20 + dif_via, 117]],
+        "4":[[20, 117],[20, 64]],
+        "5":[[5, 53],[15, 53]],
+        "6":[[15, 53 + dif_via],[5, 53 + dif_via]],
+        "7":[[20, 48],[20, 3]],
+        "8":[[109.5 + dif_via, 64],[109.5 + dif_via, 111]],
+        "9":[[109.5, 111],[109.5, 64]],
+        "10":[[31, 122.5],[104, 122.5]],
+        "11":[[104, 122.5 + dif_via],[31, 122.5 + dif_via]],
+        "12":[[20 + dif_via, 134],[20 + dif_via, 160]],
+        "13":[[20, 160],[20, 134]],
+        "14":[[31, 166],[104, 166]],
+        "15":[[104, 166 + dif_via],[31, 166 + dif_via]],
+        "16":[[109.5 + dif_via, 140],[109.5 + dif_via, 160]],
+        "17":[[109.5, 160],[109.5, 140]],
+        "18":[[172, 112 + dif_via*4],[121, 112 + dif_via*4]],
+        "19":[[172, 112 + dif_via*3],[121, 112 + dif_via*3]],
+        "20":[[121, 112 + dif_via*2],[172, 112 + dif_via*2]],
+        "21":[[121, 112 + dif_via*1],[172, 112 + dif_via*1]],
+        "22":[[172.5 + dif_via, 111],[172.5 + dif_via, 48]],
+        "23":[[172.5 + dif_via*2, 111],[172.5 + dif_via*2, 48]],
+        "24":[[172.5 + dif_via*3, 48],[172.5 + dif_via*3, 111]],
+        "25":[[172.5 + dif_via*4, 48],[172.5 + dif_via*4, 111]],
+        "26":[[200.5, 112 + dif_via],[251.5, 112 + dif_via]],
+        "27":[[200.5, 112 + dif_via*2],[251.5, 112 + dif_via*2]],
+        "28":[[251.5, 112 + dif_via*3],[200.5, 112 + dif_via*3]],
+        "29":[[251.5, 112 + dif_via*4],[200.5, 112 + dif_via*4]],
+        "30":[[172.5 + dif_via*4, 140],[172.5 + dif_via*4, 155]],
+        "31":[[172.5 + dif_via*3, 140],[172.5 + dif_via*3, 155]],
+        "32":[[172.5 + dif_via*2, 155],[172.5 + dif_via*2, 140]],
+        "33":[[172.5 + dif_via, 155],[172.5 + dif_via, 140]],
+        "34":[[200.5, 156 + dif_via],[251.5, 156 + dif_via]],
+        "35":[[200.5, 156 + dif_via*2],[251.5, 156 + dif_via*2]],
+        "36":[[251.5, 156 + dif_via*3],[200.5, 156 + dif_via*3]],
+        "37":[[251.5, 156 + dif_via*4],[200.5, 156 + dif_via*4]],
+        "38":[[252.5 + dif_via, 155],[252.5 + dif_via, 140]],
+        "39":[[252.5 + dif_via*2, 155],[252.5 + dif_via*2, 140]],
+        "40":[[252.5 + dif_via*3, 140],[252.5 + dif_via*3, 155]],
+        "41":[[252.5 + dif_via*4, 140],[252.5 + dif_via*4, 155]],
+        "42":[[252.5 + dif_via, 111],[252.5 + dif_via, 48]],
+        "43":[[252.5 + dif_via*2, 111],[252.5 + dif_via*2, 48]],
+        "44":[[252.5 + dif_via*3, 48],[252.5 + dif_via*3, 111]],
+        "45":[[252.5 + dif_via*4, 48],[252.5+ dif_via*4, 111]],
+        "46":[[251.5, 19.5 + dif_via*4],[200.5, 19.5 + dif_via*4]],
+        "47":[[251.5, 19.5 + dif_via*3],[200.5, 19.5 + dif_via*3]],
+        "48":[[200.5, 19.5 + dif_via*2],[251.5, 19.5 + dif_via*2]],
+        "49":[[200.5, 19.5 + dif_via],[251.5, 19.5 + dif_via]],
+        }
+
 # Teste Cars
 c1 = Car(Point(20, 20), np.pi/2)
 
-# 0
-c2 = Car(Point(20, 3), np.pi/2)
-c3 = Car(Point(20 + dif_via, 3), np.pi/2)
+c2 = Car(Point(25.5, 20), np.pi/2)
+autonomous_list = []
+autonomous_list.append(Greedy(c2,["0","1","8","11","4", "7"]))
 
-# 1
-c2 = Car(Point(15, 53), np.pi)
-c3 = Car(Point(15, 53 + dif_via), np.pi)
-
-# 2
-c2 = Car(Point(20, 48), np.pi/2)
-c3 = Car(Point(20 + dif_via, 48), np.pi/2)
-
-# 3
-c2 = Car(Point(31, 53), np.pi)
-c3 = Car(Point(31, 53 + dif_via), np.pi)
-
-# 4
-c2 = Car(Point(20, 64), np.pi/2)
-c3 = Car(Point(20 + dif_via, 64), np.pi/2)
-
-# 5
-c2 = Car(Point(20, 117), np.pi/2)
-c3 = Car(Point(20 + dif_via, 117), np.pi/2)
-
-# 6
-c2 = Car(Point(31, 122.5), np.pi)
-c3 = Car(Point(31, 122.5 + dif_via), np.pi)
-
-# 7
-c2 = Car(Point(20, 134), np.pi/2)
-c3 = Car(Point(20 + dif_via, 134), np.pi/2)
-
-# 8
-c2 = Car(Point(20, 160), np.pi/2)
-c3 = Car(Point(20 + dif_via, 160), np.pi/2)
-
-# 9
-c2 = Car(Point(31, 166), np.pi)
-c3 = Car(Point(31, 166 + dif_via), np.pi)
-
-# 10
-c2 = Car(Point(104, 166), np.pi)
-c3 = Car(Point(104, 166 + dif_via), np.pi)
-
-# 11
-c2 = Car(Point(109.5, 160), np.pi/2)
-c3 = Car(Point(109.5 + dif_via, 160), np.pi/2)
-
-# 12
-c2 = Car(Point(109.5, 140), np.pi/2)
-c3 = Car(Point(109.5 + dif_via, 140), np.pi/2)
-
-# 13
-c2 = Car(Point(104, 122.5), np.pi)
-c3 = Car(Point(104, 122.5 + dif_via), np.pi)
-
-# 14
-c2 = Car(Point(109.5, 111), np.pi/2)
-c3 = Car(Point(109.5 + dif_via, 111), np.pi/2)
-
-# 15
-c2 = Car(Point(109.5, 64), np.pi/2)
-c3 = Car(Point(109.5 + dif_via, 64), np.pi/2)
-
-# 16
-c2 = Car(Point(104, 53), np.pi)
-c3 = Car(Point(104, 53 + dif_via), np.pi)
-
-# 17
-c2 = Car(Point(121, 112 + dif_via), np.pi)
-c3 = Car(Point(121, 112 + dif_via*2), np.pi)
-c4 = Car(Point(121, 112 + dif_via*3), np.pi)
-c5 = Car(Point(121, 112 + dif_via*4), np.pi)
-
-# 18
-c2 = Car(Point(172, 112 + dif_via), np.pi)
-c3 = Car(Point(172, 112 + dif_via*2), np.pi)
-c4 = Car(Point(172, 112 + dif_via*3), np.pi)
-c5 = Car(Point(172, 112 + dif_via*4), np.pi)
-
-# 19
-c2 = Car(Point(172.5 + dif_via, 111), np.pi/2)
-c3 = Car(Point(172.5 + dif_via*2, 111), np.pi/2)
-c4 = Car(Point(172.5 + dif_via*3, 111), np.pi/2)
-c5 = Car(Point(172.5 + dif_via*4, 111), np.pi/2)
-
-# 20
-c2 = Car(Point(200.5, 112 + dif_via), np.pi)
-c3 = Car(Point(200.5, 112 + dif_via*2), np.pi)
-c4 = Car(Point(200.5, 112 + dif_via*3), np.pi)
-c5 = Car(Point(200.5, 112 + dif_via*4), np.pi)
-
-# 21
-c2 = Car(Point(172.5 + dif_via, 140), np.pi/2)
-c3 = Car(Point(172.5 + dif_via*2, 140), np.pi/2)
-c4 = Car(Point(172.5 + dif_via*3, 140), np.pi/2)
-c5 = Car(Point(172.5 + dif_via*4, 140), np.pi/2)
-
-# 22
-c2 = Car(Point(172.5 + dif_via, 155), np.pi/2)
-c3 = Car(Point(172.5 + dif_via*2, 155), np.pi/2)
-c4 = Car(Point(172.5 + dif_via*3, 155), np.pi/2)
-c5 = Car(Point(172.5 + dif_via*4, 155), np.pi/2)
-
-# 23
-c2 = Car(Point(200.5, 156 + dif_via), np.pi)
-c3 = Car(Point(200.5, 156 + dif_via*2), np.pi)
-c4 = Car(Point(200.5, 156 + dif_via*3), np.pi)
-c5 = Car(Point(200.5, 156 + dif_via*4), np.pi)
-
-# 24
-c2 = Car(Point(251.5, 156 + dif_via), np.pi)
-c3 = Car(Point(251.5, 156 + dif_via*2), np.pi)
-c4 = Car(Point(251.5, 156 + dif_via*3), np.pi)
-c5 = Car(Point(251.5, 156 + dif_via*4), np.pi)
-
-# 25
-c2 = Car(Point(252.5 + dif_via, 155), np.pi/2)
-c3 = Car(Point(252.5 + dif_via*2, 155), np.pi/2)
-c4 = Car(Point(252.5 + dif_via*3, 155), np.pi/2)
-c5 = Car(Point(252.5 + dif_via*4, 155), np.pi/2)
-
-# 26
-c2 = Car(Point(252.5 + dif_via, 140), np.pi/2)
-c3 = Car(Point(252.5 + dif_via*2, 140), np.pi/2)
-c4 = Car(Point(252.5 + dif_via*3, 140), np.pi/2)
-c5 = Car(Point(252.5 + dif_via*4, 140), np.pi/2)
-
-# 27
-c2 = Car(Point(251.5, 112 + dif_via), np.pi)
-c3 = Car(Point(251.5, 112 + dif_via*2), np.pi)
-c4 = Car(Point(251.5, 112 + dif_via*3), np.pi)
-c5 = Car(Point(251.5, 112 + dif_via*4), np.pi)
-
-# 28
-c2 = Car(Point(252.5 + dif_via, 111), np.pi/2)
-c3 = Car(Point(252.5 + dif_via*2, 111), np.pi/2)
-c4 = Car(Point(252.5 + dif_via*3, 111), np.pi/2)
-c5 = Car(Point(252.5 + dif_via*4, 111), np.pi/2)
-
-# 29
-c2 = Car(Point(252.5 + dif_via, 48), np.pi/2)
-c3 = Car(Point(252.5 + dif_via*2, 48), np.pi/2)
-c4 = Car(Point(252.5 + dif_via*3, 48), np.pi/2)
-c5 = Car(Point(252.5 + dif_via*4, 48), np.pi/2)
-
-# 30
-c2 = Car(Point(251.5, 19.5 + dif_via), np.pi)
-c3 = Car(Point(251.5, 19.5 + dif_via*2), np.pi)
-c4 = Car(Point(251.5, 19.5 + dif_via*3), np.pi)
-c5 = Car(Point(251.5, 19.5 + dif_via*4), np.pi)
-
-# 31
-c2 = Car(Point(200.5, 19.5 + dif_via), np.pi)
-c3 = Car(Point(200.5, 19.5 + dif_via*2), np.pi)
-c4 = Car(Point(200.5, 19.5 + dif_via*3), np.pi)
-c5 = Car(Point(200.5, 19.5 + dif_via*4), np.pi)
-
-# 19
-c2 = Car(Point(172.5 + dif_via, 48), np.pi/2)
-c3 = Car(Point(172.5 + dif_via*2, 48), np.pi/2)
-c4 = Car(Point(172.5 + dif_via*3, 48), np.pi/2)
-c5 = Car(Point(172.5 + dif_via*4, 48), np.pi/2)
-
+for road in roads:
+    goal = roads[road]
+    start = goal[0]
+    end = goal[1]
+    if DEBUG_ROAD_LINES:
+        world.add(Line(Point(start[0], start[1]), Point(end[0], end[1])))   
+    #world.add(Pedestrian(Point(start[0], start[1]), np.pi))
+    #world.add(Pedestrian(Point(end[0], end[1]), np.pi))
 
 world.add(c1)
 world.add(c2)
-world.add(c3)
-world.add(c4)
-world.add(c5)
 
-
+world.render()
+from interactive_controllers import KeyboardController
+controller = KeyboardController(world)
+#autonomous_list[0].do_left_turn()
 # Move C1 -> example_intersection.py 
-c1.set_control(0, 0.35)    
-for k in range(400):    
-    if k == 100: 
-        c1.set_control(0, 0)
-    elif k == 200: 
-        c1.set_control(0, -0.02)
-    elif k == 325:
-        c1.set_control(0, 0.8)            
-    elif k == 367: 
-        continue
+while True:
+    c1.set_control(controller.steering, controller.throttle)
+    for aut in autonomous_list:
+        aut.update()
     world.tick() 
     world.render()
-    time.sleep(dt/4) 
+    time.sleep(dt/4000) 
     
     if world.collision_exists(): 
         print('Collision exists somewhere...')
