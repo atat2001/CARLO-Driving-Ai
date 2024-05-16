@@ -238,8 +238,7 @@ class Autonomous_agent:
                 if new_dir[1] > 0: ## virar a direita
                     self.prepare_right_turn()
                 elif new_dir[1] < 0:
-                    self.do_left_turn()
-
+                    self.prepare_left_turn()
 
     def get_best_movement(self):
         print("Autonomous_agent: get_best_movement not implemented for this class")
@@ -272,7 +271,8 @@ class Greedy(Autonomous_agent):
     def update(self):
         print(self.car.center)
         print(self.get_next_goal())
-
+        print("turning:" + str(self.turning))
+        print("waiting:" + str(self.waiting_for_turn))
         self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)
 

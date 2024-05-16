@@ -141,7 +141,7 @@ c1 = Car(Point(20, 20), np.pi/2)
 
 c2 = Car(Point(25.5, 20), np.pi/2)
 autonomous_list = []
-autonomous_list.append(Greedy(c2,["0","1","8","11","4", "7"]))
+autonomous_list.append(Greedy(c2,["0","1","8","11","4", "1", "8", "20", "27", "42", "47"]))
 
 for road in roads:
     goal = roads[road]
