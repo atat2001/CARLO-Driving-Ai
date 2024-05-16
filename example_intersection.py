@@ -90,17 +90,20 @@ world.add(RectangleBuilding(Point(291 + line, 102.5), Point(25 - line*1.5, 154.5
 c1 = Car(Point(20,20), np.pi/2)
 w.add(c1)
 
-c2 = Car(Point(118,90), np.pi, 'blue')
 
-autonomous_list.append(Greedy(c2,[[1,2,3]]))
+goals = [[120,90], [120,117], [126,125], [158,125], [164,131],[164,161]]
+#goals = [[120,90],[120,100], [140,130]]
+c2 = Car(Point(120,90), np.pi/2, 'blue')
+
+autonomous_list.append(Greedy(c2,goals))
 #c2.velocity = Point(1.5,0) # We can also specify an initial velocity just like this.
 w.add(c2)
 
-# Pedestrian is almost the same as Car. It is a "circle" object rather than a rectangle.
-p1 = Pedestrian(Point(28,81), np.pi)
-p1 = Pedestrian(Point(28,81), np.pi)
-p1 = Pedestrian(Point(28,81), np.pi)
-w.add(p1)
+
+## add goal points
+for goal in goals:
+    p1 = Pedestrian(Point(goal[0], goal[1]), np.pi)
+    w.add(p1)
 
 w.render() # This visualizes the world we just constructed.
 
@@ -146,7 +149,7 @@ else: # Let's use the steering wheel (Logitech G29) for the human control of car
         w.tick() # This ticks the world for one time step (dt second)
         w.render()
         time.sleep(dt/4000) # Isto é tipo a accuracy das coisas, quanto maior for esse numero mais updates dá
-        if w.collision_exists():
+        if w.collision_exists() and False:
             print('Collision exists somewhere...')
             
 
