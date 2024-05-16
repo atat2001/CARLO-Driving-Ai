@@ -4,7 +4,7 @@ from world import World
 from agents import Car, RectangleBuilding, Painting, Pedestrian
 from geometry import Point, Line
 import time
-from autonomous_agents import Greedy
+from autonomous_agents import Greedy, Passive
 from shared_variables import roads, dif_via, dt
 DEBUG_ROAD_LINES = True # used to debug road lines
 
@@ -79,9 +79,13 @@ world.add(RectangleBuilding(Point(291 + line, 100.5), Point(25 - line*1.5, 175.5
 c1 = Car(Point(20, 20), np.pi/2)
 
 c2 = Car(Point(25.5, 20), np.pi/2)
+c3 = Car(Point(6, 53), 0)
 autonomous_list = []
-autonomous_list.append(Greedy(c2,["0","1","8","11","4", "1", "8", "20", "27", "42", "47"]))
+c4 = Car(Point(25.5, 22), np.pi/2)
+autonomous_list.append(Greedy(c4,["0","3","12","14","17", "9"]))
+autonomous_list.append(Passive(c2,["0","3","12","14","17", "9"]))
 
+autonomous_list.append(Passive(c3,["6","1","8", "16"]))
 for road in roads:
     goal  = roads[road]
     start = goal[0]
@@ -93,6 +97,8 @@ for road in roads:
 
 world.add(c1)
 world.add(c2)
+world.add(c3)
+world.add(c4)
 
 world.render()
 from interactive_controllers import KeyboardController

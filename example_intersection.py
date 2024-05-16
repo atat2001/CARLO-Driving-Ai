@@ -95,7 +95,7 @@ goals = [[120,90], [120,117], [126,125], [158,125], [164,131],[164,161]]
 #goals = [[120,90],[120,100], [140,130]]
 c2 = Car(Point(120,90), np.pi/2, 'blue')
 
-autonomous_list.append(Greedy(c2,goals))
+autonomous_list.append(Passive(c2,goals))
 #c2.velocity = Point(1.5,0) # We can also specify an initial velocity just like this.
 w.add(c2)
 
