@@ -6,7 +6,7 @@ from geometry import Point, Line
 import time
 from autonomous_agents import Greedy
 
-DEBUG_ROAD_LINES = False # used to debug road lines
+DEBUG_ROAD_LINES = True # used to debug road lines
 
 # Time steps (s)
 dt = 5 
