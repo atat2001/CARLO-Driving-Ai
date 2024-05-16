@@ -1,10 +1,10 @@
 import numpy as np
+from shared_variables import SIDE_TURN
 try:
     import pygame # necessary only for the SteeringWheelController
 except ImportError:
     print('pygame is not installed, you won\'t be able to use the steering wheel.')
 
-SIDE_TURN = np.pi/10
 
 class KeyboardController:
     def __init__(self, world):
