@@ -8,7 +8,9 @@ SIDE_TURN = np.pi/10
 
 TURN_FRONT = 5.36
 dif_via = 5.5 ## 'put some diferent way
+
 class Autonomous_agent:
+
     def __init__(self, car, path):
         self.i = 1
         self.path = [[car.center.x, car.center.y]] + self.create_path(path)
@@ -20,6 +22,7 @@ class Autonomous_agent:
         self.turning = [False, False]
         self.old_heading = None
         self.waiting_for_turn = [False, False]
+
     @property
     def steering(self):
         return self._steering
@@ -88,6 +91,7 @@ class Autonomous_agent:
     @steering.setter
     def steering(self, val):
         self._steering = val
+        
     @throttle.setter
     def throttle(self, val):
         #print(self._throttle)
@@ -245,6 +249,7 @@ class Autonomous_agent:
 
     def update(self):
         print("Autonomous_agent: update not implemented for this class")
+
 
 class Greedy(Autonomous_agent):
     def __init__(self, car, path):

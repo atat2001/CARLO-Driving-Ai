@@ -21,12 +21,7 @@ line = 1.5
 dif_via = 5.5 # Length diferença entre vias (teste)
 
 
-''' 
-BLOCKS 
-Comentário: já tiro o offset e lines para depois ser mais fácil vermos os limites à volta de cada intersection. 
-Foi só mais fácil para mim no inicio para ver distancias e quês.
-Also nao vale a pena por isto bonito, vai ficar assim
-'''
+''' BLOCKS '''
 
 #1
 world.add(Painting(Point(8, 125.5), Point(17, 127), 'gray80'))
@@ -144,9 +139,9 @@ autonomous_list = []
 autonomous_list.append(Greedy(c2,["0","1","8","11","4", "1", "8", "20", "27", "42", "47"]))
 
 for road in roads:
-    goal = roads[road]
+    goal  = roads[road]
     start = goal[0]
-    end = goal[1]
+    end   = goal[1]
     if DEBUG_ROAD_LINES:
         world.add(Line(Point(start[0], start[1]), Point(end[0], end[1])))   
     #world.add(Pedestrian(Point(start[0], start[1]), np.pi))
