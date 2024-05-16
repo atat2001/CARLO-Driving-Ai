@@ -1,17 +1,18 @@
 import numpy as np
 from enum import Enum
 from geometry import Point  
+from shared_variables import dif_via, SIDE_TURN, roads, road_to_intersection, intersections
 
-LANE_DISTANCE = 5
+import time
+
 GOAL_RADIUS = 2
-SIDE_TURN = np.pi/10
-
 TURN_FRONT = 5.36
+INTERSECTION_DISTANCE = 400  ## distance to the intersection to start slowing down (consider it squared so 400=20)
 
 class Autonomous_agent:
     def __init__(self, car, path):
-        self.i = 1
-        self.path = path
+        self.roads = path
+        self.path = [[car.center.x, car.center.y]] + self.create_path(path)
         self.cur_goal = 1
         self.car = car
         self.car.debug = False
@@ -20,6 +21,30 @@ class Autonomous_agent:
         self.turning = [False, False]
         self.old_heading = None
         self.waiting_for_turn = [False, False]
+        self.current_intersection = None
+        self.stop = False
+        self.stop_time = 0
+
+    def update_intersection(self): 
+        if self.current_intersection != None:# esta na intercecao
+            if self.get_next_intersection() != self.current_intersection: # verifica se ja acabou a intercecao
+                self.current_intersection.remove_car(self.car)
+                self.current_intersection = None
+        else:   # nao esta na intercecao
+            road_id = self.get_current_road()
+            if self.get_next_goal() == roads[road_id][1]:  ## se o proximo goal for o inicio de uma intercecao
+                dist = self.get_distance()
+                dist = dist[0]*dist[0] + dist[1]*dist[1]
+                if dist < INTERSECTION_DISTANCE:
+                    self.current_intersection = self.get_next_intersection()
+                    self.current_intersection.add_car(self.car)
+
+    def get_current_road(self):
+        return self.roads[self.cur_goal // 2]
+
+    def get_next_intersection(self):
+        return intersections[road_to_intersection[self.get_current_road()]]
+
     @property
     def steering(self):
         return self._steering
@@ -28,9 +53,16 @@ class Autonomous_agent:
         #print("going vruuum")
         return self._throttle
 
+    def create_path(self, path):
+        returner = [roads[path[0]][1]]
+        for i in path[1:]:
+            returner += roads[i]
+        return returner
+
     @steering.setter
     def steering(self, val):
         self._steering = val
+        
     @throttle.setter
     def throttle(self, val):
         #print(self._throttle)
@@ -156,7 +188,8 @@ class Autonomous_agent:
         return self.turning[0] or self.turning[1] ## did it do something?
 
     def handle_point(self):
-        print("handling thing")
+        if self.car.debug:
+            print("handling thing")
         last_dir = self.get_last_direction()
         self.increment_cur_goal()
         new_dir = self.get_last_direction()
@@ -181,8 +214,7 @@ class Autonomous_agent:
                 if new_dir[1] > 0: ## virar a direita
                     self.prepare_right_turn()
                 elif new_dir[1] < 0:
-                    self.do_left_turn()
-
+                    self.prepare_left_turn()
 
     def get_best_movement(self):
         print("Autonomous_agent: get_best_movement not implemented for this class")
@@ -190,10 +222,10 @@ class Autonomous_agent:
     def update(self):
         print("Autonomous_agent: update not implemented for this class")
 
+
 class Greedy(Autonomous_agent):
     def __init__(self, car, path):
         super().__init__(car, path)
-    
 
     ##### greedy things
     def get_best_movement(self):
@@ -213,13 +245,92 @@ class Greedy(Autonomous_agent):
             self.accelerate()
 
     def update(self):
+        #print(self.get_next_intersection())
+        #print(self.get_current_road())
+        if self.car.debug:
+            print(self.car.center)
+            print(self.get_next_goal())
+            print("turning:" + str(self.turning))
+            print("waiting:" + str(self.waiting_for_turn))
+        [print(str(intersections[x]) + "-" + str(intersections[x].get_number_of_cars())) for x in intersections]
+        self.update_intersection()
         self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)
 
     def mock_update(self):
+        print(self.get_next_goal())
         self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)
 
 
 class Passive(Autonomous_agent):
+    def __init__(self, car, path):
+        super().__init__(car, path)
+        self.skip_until = -1
+            
+    def try_to_go(self):
+        ## rng function here
+        if time.time() - self.stop_time > 2:
+            self.stop = False
+            self.stop_time = 0
+            self.skip_until = self.cur_goal
+            return True
+        return False
+
+        ##### greedy things
+    def get_best_movement(self):
+        dec = False
+        if self.cur_goal != self.skip_until:
+            if self.current_intersection != None:
+                print("is it empty?")
+                if self.get_next_intersection().get_number_of_cars() > 1:
+                    print("it is")
+                    self.stop = True
+            if self.stop:
+                if(self.car.speed > 0):
+                    self.deaccelerate()
+                    dec = True
+                else:
+                    self.car.velocity = Point(0,0)
+                    if self.stop_time == 0:
+                        self.stop_time = time.time()
+                    if not(self.try_to_go()):
+                        return 
+        
+        # np.mod(, 2*np.pi)
+        if self.turn_handler(): ## do curva as fast as possible
+
+            if not(dec):
+                self.accelerate()
+            d = self.get_distance()
+            if d[0] == 0 and d[1] == 0: ## se chegou a um ponto
+                self.handle_point()
+            return
+        d = self.get_distance()
+        if d[0] == 0 and d[1] == 0: ## se chegou a um ponto
+            self.handle_point()  ## handle it
+        elif d[0] == 0 or d[1] == 0: ## esta numa reta
+            if not(dec):
+                self.accelerate()
+        else:  ## 
+            if not(dec):
+                self.accelerate()
+
+    def update(self):
+        #print(self.get_next_intersection())
+        #print(self.get_current_road())
+        if self.car.debug:
+            print(self.car.center)
+            print(self.get_next_goal())
+            print("turning:" + str(self.turning))
+            print("waiting:" + str(self.waiting_for_turn))
+        [print(str(intersections[x]) + "-" + str(intersections[x].get_number_of_cars())) for x in intersections]
+        self.update_intersection()
+        self.get_best_movement()
+        self.car.set_control(self.steering, self.throttle)
+
+    def mock_update(self):
+        print(self.get_next_goal())
+        self.get_best_movement()
+        self.car.set_control(self.steering, self.throttle)
 ## Curvas: o agente a virar para a esquerda andara 5.32 unidades para a frente e 9.32 para a esquerda.

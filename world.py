@@ -4,6 +4,8 @@ from typing import Union
 from visualizer import Visualizer
 from enum import Enum
 import time
+from shared_variables import intersections
+from intersection.intersection import Intersection
 
 class World:
     def __init__(self, dt: float, width: float, height: float, ppm: float = 8):
@@ -13,7 +15,9 @@ class World:
         self.dt = dt # simulation time step
         self.visualizer = Visualizer(width, height, ppm=ppm)
         self.last_tick_time = time.time()
-        
+        for i in range(13):
+            intersections[str(i)] = Intersection(i)
+
     def add(self, entity: Entity):
         if entity.movable:
             self.dynamic_agents.append(entity)
