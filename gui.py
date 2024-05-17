@@ -4,8 +4,10 @@ from world import World
 from agents import Car, RectangleBuilding, Painting, Pedestrian
 from geometry import Point, Line
 import time
-from autonomous_agents import Greedy, Passive
 from shared_variables import roads, dif_via, dt
+from autonomous_agents.greedy import Greedy
+from autonomous_agents.passive import Passive
+
 DEBUG_ROAD_LINES = True # used to debug road lines
 
 
