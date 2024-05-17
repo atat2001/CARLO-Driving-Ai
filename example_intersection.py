@@ -150,7 +150,8 @@ else: # Let's use the steering wheel (Logitech G29) for the human control of car
         w.render()
         time.sleep(dt/4000) # Isto é tipo a accuracy das coisas, quanto maior for esse numero mais updates dá
         if w.collision_exists() and False:
-            print('Collision exists somewhere...')
+            #print('Collision exists somewhere...')
+            pass
             
 
 

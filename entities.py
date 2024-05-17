@@ -60,7 +60,7 @@ class Entity:
             lr = self.rear_dist
             lf = lr # we assume the center of mass is the same as the geometric center of the entity
             beta = np.arctan(lr / (lf + lr) * np.tan(self.inputSteering))
-            if self.debug:
+            if self.debug and False:
                 print(f"heading:{self.heading} center: {self.center}")
             
             new_angular_velocity = speed * self.inputSteering # this is not needed and used for this model, but let's keep it for consistency (and to avoid if-else statements)

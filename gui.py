@@ -80,14 +80,14 @@ world.add(RectangleBuilding(Point(291 + line, 100.5), Point(25 - line*1.5, 175.5
 # Teste Cars
 c1 = Car(Point(20, 20), np.pi/2)
 
-c2 = Car(Point(25.5, 20), np.pi/2)
-c3 = Car(Point(6, 53), 0)
+c2 = Car(Point(25.5, 20), np.pi/2, "blue")
+c3 = Car(Point(6, 53), 0, "blue")
 autonomous_list = []
 c4 = Car(Point(25.5, 22), np.pi/2)
-autonomous_list.append(Greedy(c4,["0","3","12","14","17", "9"]))
-autonomous_list.append(Passive(c2,["0","3","12","14","17", "9"]))
+#autonomous_list.append(Greedy(c4,["0","3","12","14","17", "9"]))
+#autonomous_list.append(Passive(c2,["0","3","12","14","17", "9", "2"]))
 
-autonomous_list.append(Passive(c3,["6","1","8", "16"]))
+#autonomous_list.append(Passive(c3,["6","1","8", "16"]))
 for road in roads:
     goal  = roads[road]
     start = goal[0]
@@ -102,20 +102,36 @@ world.add(c2)
 world.add(c3)
 world.add(c4)
 
+c2 = Car(Point(16, 53), 0, "blue")
+c3 = Car(Point(251.5-1, 112 + dif_via*3), np.pi, "blue")  #[251.5, 112 + dif_via*4]
+c4 = Car(Point(104-1, 122.5 + dif_via), np.pi)
+
+#autonomous_list.append(Passive(c2,["1","8","11","12"]))
+c3.debug = True
+autonomous_list.append(Passive(c3,["28","19","11", "12"]))
+#autonomous_list.append(Passive(c4,["11","4","1"]))
+
+world.add(c2)
+world.add(c3)
+world.add(c4)
+
+
 world.render()
 from interactive_controllers import KeyboardController
 controller = KeyboardController(world)
 #autonomous_list[0].do_left_turn()
 # Move C1 -> example_intersection.py 
-while True:
+
+for k in range(5000):
     c1.set_control(controller.steering, controller.throttle)
     for aut in autonomous_list:
         aut.update()
     world.tick() 
     world.render()
-    time.sleep(dt/4000) 
+    time.sleep(0.03) 
     
     if world.collision_exists(): 
-        print('Collision exists somewhere...')
+        pass
+        #print('Collision exists somewhere...')
 
 world.close()

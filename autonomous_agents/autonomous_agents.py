@@ -8,14 +8,16 @@ import time
 GOAL_RADIUS = 2
 TURN_FRONT = 5.36
 INTERSECTION_DISTANCE = 400  ## distance to the intersection to start slowing down (consider it squared so 400=20)
+TURN_THRESHOLD = 1   ## used to fix a small bug
 
 class AutonomousAgent:
     def __init__(self, car, path):
         self.roads = path
+        car.center = Point((roads[path[0]][0][0] + roads[path[0]][1][0])/2, (roads[path[0]][1][1] + roads[path[0]][0][1])/2)
         self.path = [[car.center.x, car.center.y]] + self.create_path(path)
         self.cur_goal = 1
         self.car = car
-        self.car.debug = False
+        #self.car.debug = False
         self._steering = 0
         self._throttle = 0
         self.turning = [False, False]
@@ -133,12 +135,23 @@ class AutonomousAgent:
         return self.car.heading
 
     def get_last_direction(self, i = 0):
-        return [self.path[self.cur_goal-i][0] - self.path[self.cur_goal-1-i][0], self.path[self.cur_goal-i][1] - self.path[self.cur_goal-1-i][1]]
+        x = self.path[self.cur_goal-i][0] - self.path[self.cur_goal-1-i][0]
+        y = self.path[self.cur_goal-i][1] - self.path[self.cur_goal-1-i][1]
+        if abs(x) < TURN_THRESHOLD:
+            x = 0
+        if abs(y) < TURN_THRESHOLD:
+            y = 0
+        return [x, y]
 
     def increment_cur_goal(self):
         if self.cur_goal != len(self.path)-1:
             self.cur_goal += 1
         else:
+            if self.current_intersection != None:
+                try:
+                    self.current_intersection.remove_car(self.car)
+                except:
+                    pass
             self.car.movable = False
 
     def get_distance(self):
@@ -191,6 +204,7 @@ class AutonomousAgent:
         if self.car.debug:
             print("handling thing")
         last_dir = self.get_last_direction()
+        prev_goal = self.get_next_goal()
         self.increment_cur_goal()
         new_dir = self.get_last_direction()
         if last_dir[0] == 0:  ## se antes de chegar ao ponto estiver a ir reto na vertical
@@ -215,6 +229,12 @@ class AutonomousAgent:
                     self.prepare_right_turn()
                 elif new_dir[1] < 0:
                     self.prepare_left_turn()
+
+        if self.car.heading == np.pi or self.car.heading == 0:
+            self.car.center = Point(self.car.center.x,prev_goal[1])
+        else:
+            self.car.center = Point(prev_goal[0],self.car.center.y)
+
 
     def get_best_movement(self):
         print("Autonomous_agent: get_best_movement not implemented for this class")

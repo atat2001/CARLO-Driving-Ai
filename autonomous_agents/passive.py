@@ -24,7 +24,7 @@ class Passive(AutonomousAgent):
         dec = False
         if self.cur_goal != self.skip_until:
             if self.current_intersection != None:
-                print("is it empty?")
+                #print("is it empty?")
                 if self.get_next_intersection().get_number_of_cars() > 1:
                     print("it is")
                     self.stop = True
@@ -62,11 +62,12 @@ class Passive(AutonomousAgent):
         #print(self.get_next_intersection())
         #print(self.get_current_road())
         if self.car.debug:
-            print(self.car.center)
+            #print(self.car.center)
+            print("n:")
             print(self.get_next_goal())
-            print("turning:" + str(self.turning))
-            print("waiting:" + str(self.waiting_for_turn))
-        [print(str(intersections[x]) + "-" + str(intersections[x].get_number_of_cars())) for x in intersections]
+            #print("turning:" + str(self.turning))
+            #print("waiting:" + str(self.waiting_for_turn))
+        #[print(str(intersections[x]) + "-" + str(intersections[x].get_number_of_cars())) for x in intersections]
         self.update_intersection()
         self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)
