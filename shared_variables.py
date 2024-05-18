@@ -106,3 +106,9 @@ road_to_intersection = {"0":"1",
 }
 
 intersections = dict()
+
+
+
+"""paths = {"1":["","","","",""],
+        "2":["","","","",""],
+}"""

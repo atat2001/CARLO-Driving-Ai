@@ -14,6 +14,15 @@ class AutonomousAgent:
     def __init__(self, car, path):
         self.roads = path
         car.center = Point((roads[path[0]][0][0] + roads[path[0]][1][0])/2, (roads[path[0]][1][1] + roads[path[0]][0][1])/2)
+        if(roads[path[0]][1][0] - roads[path[0]][0][0] == 0):
+            car.heading = 3*np.pi/2
+            if(roads[path[0]][1][1] - roads[path[0]][0][1] > 0):
+                car.heading = np.pi/2
+        elif(roads[path[0]][1][1] - roads[path[0]][0][1] == 0):
+            car.heading = 0
+            if(roads[path[0]][1][0] - roads[path[0]][0][0] < 0):
+                car.heading = np.pi
+
         self.path = [[car.center.x, car.center.y]] + self.create_path(path)
         self.cur_goal = 1
         self.car = car
