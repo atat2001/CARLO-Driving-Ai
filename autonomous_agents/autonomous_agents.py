@@ -1,19 +1,18 @@
 import numpy as np
-from enum import Enum
 from geometry import Point  
-from shared_variables import dif_via, SIDE_TURN, roads, road_to_intersection, intersections
+from shared_variables import roads, road_to_intersection, intersections
 
-import time
-
-GOAL_RADIUS = 2
-TURN_FRONT = 5.36
-INTERSECTION_DISTANCE = 400  ## distance to the intersection to start slowing down (consider it squared so 400=20)
+GOAL_RADIUS    = 2
+TURN_FRONT     = 5.36
 TURN_THRESHOLD = 1   ## used to fix a small bug
+INTERSECTION_DISTANCE = 400  ## distance to the intersection to start slowing down (consider it squared so 400=20)
 
 class AutonomousAgent:
     def __init__(self, car, path):
         self.roads = path
         car.center = Point((roads[path[0]][0][0] + roads[path[0]][1][0])/2, (roads[path[0]][1][1] + roads[path[0]][0][1])/2)
+        
+        #Isto é o que? Por numa funcao e chamar
         if(roads[path[0]][1][0] - roads[path[0]][0][0] == 0):
             car.heading = 3*np.pi/2
             if(roads[path[0]][1][1] - roads[path[0]][0][1] > 0):
@@ -26,6 +25,7 @@ class AutonomousAgent:
         self.path = [[car.center.x, car.center.y]] + self.create_path(path)
         self.cur_goal = 1
         self.car = car
+        self.curr_state = None
         #self.car.debug = False
         self._steering = 0
         self._throttle = 0
@@ -36,32 +36,54 @@ class AutonomousAgent:
         self.stop = False
         self.stop_time = 0
 
+
     def update_intersection(self): 
-        if self.current_intersection != None:# esta na intercecao
-            if self.get_next_intersection() != self.current_intersection: # verifica se ja acabou a intercecao
-                self.current_intersection.remove_car(self.car)
-                self.current_intersection = None
-        else:   # nao esta na intercecao
+        # Inside intersection
+        if self.current_intersection != None: 
+            if self.get_next_intersection() != self.current_intersection: # End of intersection                
+                self.remove_intersection_data()
+        
+        # Outside intersection
+        else: 
             road_id = self.get_current_road()
-            if self.get_next_goal() == roads[road_id][1]:  ## se o proximo goal for o inicio de uma intercecao
+            if self.get_next_goal() == roads[road_id][1]:  # se o proximo goal for o inicio de uma intersection
                 dist = self.get_distance()
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
                 if dist < INTERSECTION_DISTANCE:
-                    self.current_intersection = self.get_next_intersection()
-                    self.current_intersection.add_car(self.car)
+                    self.current_intersection = self.get_next_intersection() 
+                    self.add_intersection_data()                   
+                        
 
     def get_current_road(self):
         return self.roads[self.cur_goal // 2]
+    
+    def get_next_road(self):
+        return self.roads[(self.cur_goal + 2)// 2]
 
     def get_next_intersection(self):
         return intersections[road_to_intersection[self.get_current_road()]]
+    
+    def add_intersection_data(self):
+        curr_road = self.get_current_road()
+        next_road = self.get_next_road()
+                
+        #Add car and Current State 
+        self.current_intersection.add_car(self.car)                                        
+        if self.cur_goal + 1 < len(self.path): #ha paths que acaba no inicio de uma intersection, entao da erro                                               
+            self.curr_state = (curr_road, next_road) 
+            self.current_intersection.add_state(curr_road, self.get_next_road()) 
+    
+    def remove_intersection_data(self):
+        self.current_intersection.remove_car(self.car)                                
+        self.current_intersection.remove_state(self.curr_state[0], self.curr_state[1]) #eliminar acao feita                
+        self.current_intersection = None
+
 
     @property
     def steering(self):
         return self._steering
     @property
-    def throttle(self):
-        #print("going vruuum")
+    def throttle(self):        
         return self._throttle
 
     def create_path(self, path):
@@ -75,12 +97,10 @@ class AutonomousAgent:
         self._steering = val
         
     @throttle.setter
-    def throttle(self, val):
-        #print(self._throttle)
+    def throttle(self, val):        
         self._throttle = val
 
-    def accelerate(self):
-        #print("vrum vrum")
+    def accelerate(self):        
         self.throttle = 1.5
 
     def deaccelerate(self):
@@ -173,8 +193,7 @@ class AutonomousAgent:
             distance[1] = 0
         return distance
 
-    def turn_handler(self):
-        #print(self.waiting_for_turn)
+    def turn_handler(self):        
         if self.waiting_for_turn[0]:
             self.prepare_left_turn()
         if self.waiting_for_turn[1]:

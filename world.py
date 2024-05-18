@@ -4,20 +4,25 @@ from typing import Union
 from visualizer import Visualizer
 from enum import Enum
 import time
-from shared_variables import intersections
+from shared_variables import intersections, intersection_roads
 from intersection.intersection import Intersection
 
 class World:
     def __init__(self, dt: float, width: float, height: float, ppm: float = 8):
         self.dynamic_agents = []
-        self.static_agents = []
-        self.t = 0 # simulation time
+        self.static_agents  = []
+        self.t  = 0  # simulation time
         self.dt = dt # simulation time step
         self.visualizer = Visualizer(width, height, ppm=ppm)
         self.last_tick_time = time.time()
-        for i in range(13):
-            intersections[str(i)] = Intersection(i)
+                        
+        self.initialize_intersections()
+                
 
+    @property
+    def agents(self):
+        return self.static_agents + self.dynamic_agents
+        
     def add(self, entity: Entity):
         if entity.movable:
             self.dynamic_agents.append(entity)
@@ -34,11 +39,13 @@ class World:
     
     def render(self):
         self.visualizer.create_window(bg_color = 'gray')
-        self.visualizer.update_agents(self.agents)
-        
-    @property
-    def agents(self):
-        return self.static_agents + self.dynamic_agents
+        self.visualizer.update_agents(self.agents)        
+    
+    def initialize_intersections(self):       
+        #Atualiza as intersections do shared_variables e depois os agentes acedem a isso      
+        for id, roads in intersection_roads.items():
+            phases = [] #TO-DO 
+            intersections[id] = Intersection(id, roads, phases)        
         
     def collision_exists(self, agent = None):
         if agent is None:
@@ -83,6 +90,7 @@ class World:
         self.dynamic_agents = []
         self.t = 0
 
+'''
 class TypeObj(Enum):
     LANE_START = 0
     INTERSECTION_START = 1
@@ -131,5 +139,5 @@ class intersection:
             for phase in self.move_to_phases[car.get_target_lane()]:
                 phase += 1
                 
-            
+'''           
         

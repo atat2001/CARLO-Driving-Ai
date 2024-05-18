@@ -1,16 +1,14 @@
 # Imports
 import numpy as np
 from world import World
-from agents import Car, RectangleBuilding, Painting, Pedestrian
+from agents import Car, RectangleBuilding, Painting
 from geometry import Point, Line
-import math
 import time
 from shared_variables import roads, dif_via, dt
 from autonomous_agents.greedy import Greedy
 from autonomous_agents.passive import Passive
 
 DEBUG_ROAD_LINES = True # used to debug road lines
-
 TIME = 30   # time in seconds
 
 #World
@@ -18,7 +16,7 @@ world = World(dt, width = 300, height = 200, ppm = 3)
 
 # Sidewalks
 offset = 60
-line = 1.5
+line   = 1.5
 
 
 ''' BLOCKS '''
@@ -77,19 +75,20 @@ world.add(RectangleBuilding(Point(291 + line, 100.5), Point(25 - line*1.5, 175.5
 
 
 
-''' TESTES '''
+''' TESTES'''
 
 # Teste Cars
 c1 = Car(Point(20, 20), np.pi/2)
-
 c2 = Car(Point(25.5, 20), np.pi/2, "blue")
 c3 = Car(Point(6, 53), 0, "blue")
-autonomous_list = []
 c4 = Car(Point(25.5, 22), np.pi/2)
-autonomous_list.append(Greedy(c4,["0","3","12","14","17", "9"]))
-autonomous_list.append(Passive(c2,["0","3","12","14","17", "9", "2"]))
 
+autonomous_list = []
+autonomous_list.append(Greedy(c4,["0","3","12","14","17","9"]))
+autonomous_list.append(Passive(c2,["0","3","12","14","17","9","2"]))
 autonomous_list.append(Passive(c3,["6","1","8", "16"]))
+
+#Adicionar isto no world e chamar
 for road in roads:
     goal  = roads[road]
     start = goal[0]
@@ -106,12 +105,10 @@ world.add(c4)
 
 c2 = Car(Point(16, 53), 0, "blue")
 c3 = Car(Point(251.5-1, 112 + dif_via*3), np.pi, "blue")  #[251.5, 112 + dif_via*4]
-c4 = Car(Point(104-1, 122.5 + dif_via), np.pi)
+c4 = Car(Point(104-1, 122.5 + dif_via), np.pi, "blue")
 
 autonomous_list.append(Passive(c2,["1","8","11","12"]))
-
 autonomous_list.append(Passive(c3,["28","19","11", "12"]))
-
 autonomous_list.append(Passive(c4,["11","4","1"]))
 
 world.add(c2)

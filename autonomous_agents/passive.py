@@ -26,7 +26,7 @@ class Passive(AutonomousAgent):
             if self.current_intersection != None:
                 #print("is it empty?")
                 if self.get_next_intersection().get_number_of_cars() > 1:
-                    print("it is")
+                    #print("it is")
                     self.stop = True
             if self.stop:
                 if(self.car.speed > 0):
