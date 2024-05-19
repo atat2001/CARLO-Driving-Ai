@@ -11,8 +11,6 @@ class Intersection: #(ABC):
         self.limits       = {}        
         self.curr_state   = []
         self.cars         = []
-        self.active_phase = 0
-
 
     def __str__(self):
         return f"Intersection {self.id}"
@@ -32,12 +30,10 @@ class Intersection: #(ABC):
         return None
     
 
-    def add_state(self, in_road, out_road):                  
-        in_number  = self.get_number_from_road(in_road)
-        out_number = self.get_number_from_road(out_road)
-        state = (in_number, out_number)        
+    def add_state(self, in_road, out_road):
+        state = self.get_relative_position(in_road, out_road)      
 
-        if in_number and out_number:
+        if state:
             self.curr_state.append(state)                
 
 
@@ -48,7 +44,21 @@ class Intersection: #(ABC):
             state = (in_number, out_number)            
 
             if state in self.curr_state:
-                self.curr_state.remove(state)                                
+                self.curr_state.remove(state)
+
+    def get_state(self):
+        return self.curr_state
+
+    def get_phases(self):
+        return self.phases
+
+    def get_relative_position(self, in_road, out_road):                  
+        in_number  = self.get_number_from_road(in_road)
+        out_number = self.get_number_from_road(out_road)
+
+        if in_number and out_number:
+            return (in_number, out_number)
+        return None                    
     
 
     def create_limits(self):

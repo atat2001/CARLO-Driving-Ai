@@ -1,7 +1,7 @@
 from entities import Entity
 from visualizer import Visualizer
 import time
-from shared_variables import intersections, intersection_roads
+from shared_variables import intersections, intersection_roads, intersection_phases
 from intersection.intersection import Intersection
 
 
@@ -42,8 +42,7 @@ class World:
     def initialize_intersections(self):       
         #Atualiza as intersections do shared_variables e depois os agentes acedem a isso      
         for id, roads in intersection_roads.items():
-            phases = [] #TO-DO 
-            intersections[id] = Intersection(id, roads, phases)        
+            intersections[id] = Intersection(id, roads, intersection_phases[id])        
         
     def collision_exists(self, agent = None):
         if agent is None:
