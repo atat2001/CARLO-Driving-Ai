@@ -58,20 +58,20 @@ class AutonomousAgent:
         return self.roads[self.cur_goal // 2]
     
     def get_next_road(self):
-        return self.roads[(self.cur_goal + 2)// 2]
+        return self.roads[(self.cur_goal + 2)// 2] #+2 ou +1?
 
     def get_next_intersection(self):
         return intersections[road_to_intersection[self.get_current_road()]]
     
-    def add_intersection_data(self):
-        curr_road = self.get_current_road()
-        next_road = self.get_next_road()
-                
+    def add_intersection_data(self):                        
         #Add car and Current State 
         self.current_intersection.add_car(self.car)                                        
+
         if self.cur_goal + 1 < len(self.path): #ha paths que acaba no inicio de uma intersection, entao da erro                                               
+            curr_road = self.get_current_road()
+            next_road = self.get_next_road()
             self.curr_state = (curr_road, next_road) 
-            self.current_intersection.add_state(curr_road, self.get_next_road()) 
+            self.current_intersection.add_state(curr_road, next_road) 
     
     def remove_intersection_data(self):
         self.current_intersection.remove_car(self.car)                                

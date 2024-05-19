@@ -1,11 +1,9 @@
-from agents import Car, Pedestrian, RectangleBuilding
 from entities import Entity
-from typing import Union
 from visualizer import Visualizer
-from enum import Enum
 import time
 from shared_variables import intersections, intersection_roads
 from intersection.intersection import Intersection
+
 
 class World:
     def __init__(self, dt: float, width: float, height: float, ppm: float = 8):

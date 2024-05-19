@@ -1,9 +1,4 @@
 from autonomous_agents.autonomous_agents import AutonomousAgent
-import numpy as np
-from enum import Enum
-from geometry import Point  
-from shared_variables import dif_via, SIDE_TURN, roads, road_to_intersection, intersections
-import time
 
 class Greedy(AutonomousAgent):
     def __init__(self, car, path):
