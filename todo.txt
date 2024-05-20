@@ -1,6 +1,4 @@
 rng function dos passive;
-testar mais;
-fazer parar no ponto certo;
 
 implementar road
 implementar phases

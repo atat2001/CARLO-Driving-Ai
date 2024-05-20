@@ -2,8 +2,7 @@ import numpy as np
 from geometry import Point, Rectangle, Circle, Ring
 from typing import Union
 import copy
-MINIMUM_SPEED = -300 / 4
-MAXIMUM_SPEED = 1200 / 4
+from shared_variables import MAXIMUM_SPEED, MINIMUM_SPEED
 
 class Entity:
     def __init__(self, center: Point, heading: float, movable: bool = True, friction: float = 0):
@@ -23,8 +22,8 @@ class Entity:
             self.angular_velocity = 0 # this is headingp
             self.inputSteering = 0
             self.inputAcceleration = 0
-            self.max_speed = MAXIMUM_SPEED/50
-            self.min_speed = MINIMUM_SPEED/50
+            self.max_speed = MAXIMUM_SPEED
+            self.min_speed = MINIMUM_SPEED
     
     @property
     def speed(self) -> float:
