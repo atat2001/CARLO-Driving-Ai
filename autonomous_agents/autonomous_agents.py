@@ -1,31 +1,23 @@
 import numpy as np
 from geometry import Point  
-from shared_variables import roads, road_to_intersection, intersections
+from shared_variables import dif_via, SIDE_TURN, roads, road_to_intersection, intersections, INTERSECTION_DISTANCE, THROTTLE, TIMESTEP
+from enum import Enum
+import time
+import math
 
-GOAL_RADIUS    = 2
-TURN_FRONT     = 5.36
+GOAL_RADIUS = 2
+TURN_FRONT = 5.36
 TURN_THRESHOLD = 1   ## used to fix a small bug
 INTERSECTION_DISTANCE = 400  ## distance to the intersection to start slowing down (consider it squared so 400=20)
 
 class AutonomousAgent:
     def __init__(self, car, path):
         self.roads = path
-        car.center = Point((roads[path[0]][0][0] + roads[path[0]][1][0])/2, (roads[path[0]][1][1] + roads[path[0]][0][1])/2)
-        
-        #Isto é o que? Por numa funcao e chamar
-        if(roads[path[0]][1][0] - roads[path[0]][0][0] == 0):
-            car.heading = 3*np.pi/2
-            if(roads[path[0]][1][1] - roads[path[0]][0][1] > 0):
-                car.heading = np.pi/2
-        elif(roads[path[0]][1][1] - roads[path[0]][0][1] == 0):
-            car.heading = 0
-            if(roads[path[0]][1][0] - roads[path[0]][0][0] < 0):
-                car.heading = np.pi
+        self.car = car
+        self.init_car()
 
         self.path = [[car.center.x, car.center.y]] + self.create_path(path)
         self.cur_goal = 1
-        self.car = car
-        self.curr_state = None
         #self.car.debug = False
         self._steering = 0
         self._throttle = 0
@@ -34,25 +26,59 @@ class AutonomousAgent:
         self.waiting_for_turn = [False, False]
         self.current_intersection = None
         self.stop = False
-        self.stop_time = 0
+        self.decision = False
+        self.in_decision = False
 
+    def init_car(self):
+        car = self.car
+        car.center = Point((roads[self.roads[0]][0][0] + roads[self.roads[0]][1][0])/2, (roads[self.roads[0]][1][1] + roads[self.roads[0]][0][1])/2)
+        if(roads[self.roads[0]][1][0] - roads[self.roads[0]][0][0] == 0):
+            car.heading = 3*np.pi/2
+            if(roads[self.roads[0]][1][1] - roads[self.roads[0]][0][1] > 0):
+                car.heading = np.pi/2
+        elif(roads[self.roads[0]][1][1] - roads[self.roads[0]][0][1] == 0):
+            car.heading = 0
+            if(roads[self.roads[0]][1][0] - roads[self.roads[0]][0][0] < 0):
+                car.heading = np.pi
 
-    def update_intersection(self): 
-        # Inside intersection
-        if self.current_intersection != None: 
-            if self.get_next_intersection() != self.current_intersection: # End of intersection                
-                self.remove_intersection_data()
-        
-        # Outside intersection
-        else: 
+    def update_intersection(self):    # adiciona o carro a intercecao
+        if self.current_intersection != None:# esta na intercecao
+            if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
+                self.current_intersection.remove_car(self.car)
+                self.current_intersection = None
+        else:   # nao esta na intercecao
             road_id = self.get_current_road()
             if self.get_next_goal() == roads[road_id][1]:  # se o proximo goal for o inicio de uma intersection
                 dist = self.get_distance()
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
                 if dist < INTERSECTION_DISTANCE:
                     self.current_intersection = self.get_next_intersection() 
-                    self.add_intersection_data()                   
-                        
+                    ######### TODO: verificar se isto e redundante
+                    ######### TODO: verificar se isto e redundante
+                    ######### TODO: verificar se isto e redundante
+                    ######### TODO: verificar se isto e redundante
+                    ######### TODO: verificar se isto e redundante
+                    ######### TODO: verificar se isto e redundante
+                    self.add_intersection_data()    ## nao sei se isto e redundante
+                    self.current_intersection.add_car(self.car)
+
+    def get_brake_distance(self):
+        cur_speed = self.car.speed
+        time_breaking = cur_speed/THROTTLE + 2*TIMESTEP
+        return cur_speed*time_breaking - 0.5*THROTTLE*time_breaking*time_breaking # o copilot escreveu isto e estava certo :O
+        
+            
+    def is_decision_time(self):
+        #if self.cur_goal % 2 == 0:
+        #    return False
+        if self.current_intersection != None: ## 
+            dist = self.get_distance()
+            dist_to_intersection = math.sqrt(dist[0]*dist[0] + dist[1]*dist[1])
+
+            if self.get_brake_distance() >= dist_to_intersection:  ## MAKE DECISION
+                return True
+        self.decision = False
+        return False
 
     def get_current_road(self):
         return self.roads[self.cur_goal // 2]
@@ -79,6 +105,9 @@ class AutonomousAgent:
         self.current_intersection = None
 
 
+    def different_get_current_intersection(self):
+        return intersections[road_to_intersection[self.roads[self.cur_goal-1 // 2]]]
+
     @property
     def steering(self):
         return self._steering
@@ -100,11 +129,12 @@ class AutonomousAgent:
     def throttle(self, val):        
         self._throttle = val
 
-    def accelerate(self):        
-        self.throttle = 1.5
+    def accelerate(self):
+        #print("vrum vrum")
+        self.throttle = THROTTLE
 
     def deaccelerate(self):
-        self.throttle = -1.5
+        self.throttle = -1*THROTTLE
 
     def wait_for_right_moment(self):
         last_dir = self.get_last_direction(1)
@@ -176,7 +206,7 @@ class AutonomousAgent:
         if self.cur_goal != len(self.path)-1:
             self.cur_goal += 1
         else:
-            if self.current_intersection != None:
+            if self.current_intersection != None :
                 try:
                     self.current_intersection.remove_car(self.car)
                 except:
@@ -229,6 +259,9 @@ class AutonomousAgent:
         return self.turning[0] or self.turning[1] ## did it do something?
 
     def handle_point(self):
+        if self.cur_goal % 2 == 0: 
+            self.in_decision = False
+        print("handling thing")
         if self.car.debug:
             print("handling thing")
         last_dir = self.get_last_direction()

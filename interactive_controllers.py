@@ -1,5 +1,5 @@
 import numpy as np
-from shared_variables import SIDE_TURN
+from shared_variables import SIDE_TURN, THROTTLE
 try:
     import pygame # necessary only for the SteeringWheelController
 except ImportError:
@@ -14,8 +14,8 @@ class KeyboardController:
         self.min_steering = -SIDE_TURN
         self.max_steering = +SIDE_TURN
         
-        self.min_throttle = -1.5
-        self.max_throttle = +1.5
+        self.min_throttle = -1*THROTTLE
+        self.max_throttle = THROTTLE
     
         world.visualizer.win.bind("<KeyRelease-Up>", self.arrow_up_release)
         world.visualizer.win.bind("<KeyRelease-Down>", self.arrow_down_release)
@@ -53,9 +53,9 @@ class KeyboardController:
         self.steering = 0
         
     def arrow_up_press(self, event):
-        self.throttle = 1.5
+        self.throttle = THROTTLE
     def arrow_down_press(self, event):
-        self.throttle = -1.5
+        self.throttle = -1*THROTTLE
     def arrow_left_press(self, event):
         self.steering = SIDE_TURN
     def arrow_right_press(self, event):

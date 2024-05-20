@@ -1,10 +1,11 @@
-# Shared Variables
-dt = 5  # Time steps (s)
+dt = 5  # Time step multiplier (1s real time is dt seconds in simulation)
+TIMESTEP = dt/4000
 SIDE_TURN = 0.5
-dif_via = 5.5  # Length diferença entre vias (teste)
-intersections = dict()
+dif_via = 5.5 # Length diferença entre vias (teste)
 
-
+MINIMUM_SPEED = -1.5
+MAXIMUM_SPEED = 6
+THROTTLE = 6
 # List of Roads
 roads = {
     "0": [[20 + dif_via, 3], [20 + dif_via, 48]],
@@ -180,6 +181,11 @@ intersection_phases = {
     "11": {},
     "12": {},
 }
+BREAK_TIME_SQUARED = (MAXIMUM_SPEED*MAXIMUM_SPEED)/(THROTTLE*THROTTLE)
+
+# this is to make sure it allways has time to break
+INTERSECTION_DISTANCE = 900  ## distance to the intersection to start slowing down (consider it squared so 900=30, 400 = 20)
+intersections = dict()
 
 
 """paths = {"1":["","","","",""],
