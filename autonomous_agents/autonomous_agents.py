@@ -53,14 +53,7 @@ class AutonomousAgent:
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
                 if dist < INTERSECTION_DISTANCE:
                     self.current_intersection = self.get_next_intersection() 
-                    ######### TODO: verificar se isto e redundante
-                    ######### TODO: verificar se isto e redundante
-                    ######### TODO: verificar se isto e redundante
-                    ######### TODO: verificar se isto e redundante
-                    ######### TODO: verificar se isto e redundante
-                    ######### TODO: verificar se isto e redundante
-                    self.add_intersection_data()    ## nao sei se isto e redundante
-                    self.current_intersection.add_car(self.car)
+                    self.add_intersection_data() 
 
     def get_brake_distance(self):
         cur_speed = self.car.speed
