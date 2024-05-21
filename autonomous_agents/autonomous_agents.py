@@ -291,9 +291,9 @@ class AutonomousAgent:
 
 
     def get_best_movement(self):
-        print("Autonomous_agent: get_best_movement not implemented for this class")
+        print("AutonomousAgent: get_best_movement not implemented for this class")
 
     def update(self):
-        print("Autonomous_agent: update not implemented for this class")
+        print("AutonomousAgent: update not implemented for this class")
 
 

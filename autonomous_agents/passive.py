@@ -7,10 +7,10 @@ class Passive(AutonomousAgent):
     
     def __init__(self, car, path, id = 0):
         super().__init__(car, path)
+        self.id = id
         self.stop_time = 0
         self.last_decision = -1
         self.stopping = False
-        self.id = id
         self.rng = 0
 
     def try_to_go(self):
@@ -32,18 +32,13 @@ class Passive(AutonomousAgent):
             self.handle_point()  ## handle it
         elif d[0] == 0 or d[1] == 0: ## esta numa reta
             self.accelerate()
-        else:  ## 
+        else:
             self.accelerate()
 
     def update_decision(self):
         if self.cur_goal == self.last_decision or (self.cur_goal%2 == 0 and self.last_decision == self.cur_goal-1):  ## only do decision once, on first point
             return
         
-        if(self.id > 10):
-            print("decision")
-            print(self.current_intersection)
-            print(self.get_next_intersection())
-            print(self.current_intersection.get_number_of_cars())
         self.last_decision = self.cur_goal
 
         if self.current_intersection != None:
