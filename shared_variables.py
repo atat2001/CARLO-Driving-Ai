@@ -1,5 +1,5 @@
 dt = 5  # Time step multiplier (1s real time is dt seconds in simulation)
-TIMESTEP = dt/4000
+TIMESTEP = dt/3000
 SIDE_TURN = 0.5
 dif_via = 5.5 # Length diferença entre vias (teste)
 
@@ -14,7 +14,7 @@ roads = {
     "3": [[20 + dif_via, 64], [20 + dif_via, 117]],
     "4": [[20, 117], [20, 64]],
     "5": [[15, 53 + dif_via], [5, 53 + dif_via]],
-    "6": [[5, 53], [15, 53]],
+    "6": [[1, 53], [15, 53]],
     "7": [[20, 48], [20, 3]],
     "8": [[109.5 + dif_via, 64], [109.5 + dif_via, 111]],
     "9": [[109.5, 111], [109.5, 64]],

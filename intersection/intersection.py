@@ -11,6 +11,7 @@ class Intersection: #(ABC):
         self.limits       = {}        
         self.curr_state   = []
         self.cars         = []
+        self.car_to_road = {}
 
     def __str__(self):
         return f"Intersection {self.id}"
@@ -73,13 +74,30 @@ class Intersection: #(ABC):
     def is_inside_limit(self, point):
         pass
 
-    def add_car(self, car):
-        self.cars.append(car)    
+    def add_car(self, car, road):
+        if road == "15":
+            print("added\n\n\n")
+        self.cars.append(car)
+        self.car_to_road[car] = road    
     
     def remove_car(self, car):
+        if self.car_to_road[car] == '15':
+            print("removed\n\n\n")
         self.cars.remove(car)
+        del self.car_to_road[car]
 
     def get_number_of_cars(self):
         return len(self.cars)   
 
+    def get_priority_nr(self,car):
+        ## pega na road atual(se entrar numa intercessao pega na road anterior)
+        return self.roads.index(self.car_to_road[car])
+
+    def has_priority(self,autonomous_agent):
+        if not(autonomous_agent.car.movable):
+            return True
+        for car in self.cars:
+            if self.get_priority_nr(car) < self.get_priority_nr(autonomous_agent.car):
+                return False
+        return True
     # def update_phase

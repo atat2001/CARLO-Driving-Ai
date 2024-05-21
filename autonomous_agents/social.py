@@ -3,19 +3,19 @@ from geometry import Point
 import time
 import random
 
-class Passive(AutonomousAgent):
+class Social(AutonomousAgent):
     
     def __init__(self, car, path, id = 0):
         super().__init__(car, path)
-        self.id = id
         self.stop_time = 0
         self.last_decision = -1
         self.stopping = False
-        self.rng = 0
+        self.id = id
+        self.order = -1
 
     def try_to_go(self):
         ## rng function here
-        return time.time() - self.stop_time > self.rng
+        return self.current_intersection.has_priority(self)
 
         ##### greedy things
     def get_best_movement(self):
@@ -32,19 +32,18 @@ class Passive(AutonomousAgent):
             self.handle_point()  ## handle it
         elif d[0] == 0 or d[1] == 0: ## esta numa reta
             self.accelerate()
-        else:
+        else:  ## 
             self.accelerate()
 
     def make_decision(self):
         if self.cur_goal == self.last_decision or (self.cur_goal%2 == 0 and self.last_decision == self.cur_goal-1):  ## only do decision once, on first point
             return
-        
         self.last_decision = self.cur_goal
 
-        if self.current_intersection != None:   
-            if self.current_intersection.get_number_of_cars() > 1:
+        if self.current_intersection != None:
+            if not(self.current_intersection.has_priority(self)):
                 print(f"{self.id}: stopping")
-                self.stopping = True    # define que o carro vai ter de parar asap
+                self.stopping = True                     # define que o carro vai ter de parar asap
                 self.decision = False
                 return
             else:
@@ -66,11 +65,11 @@ class Passive(AutonomousAgent):
             self.accelerate()
         elif self.stopping:   ## se a decisao for negativa e estiver a parar continua a parar
             self.stop_car()
-        
         else: # se a decisao for negativa mas nao tiver mais a parar compara os timers:
-            if self.try_to_go():    ## phases
+            if self.try_to_go():
                 self.decision = True
-                self.in_decision = False
+                print("updating in_decision: social")
+                ###self.in_decision = False
                 self.update_intersection() # due to a bug keep this here
                 self.accelerate()
             else:
@@ -81,12 +80,15 @@ class Passive(AutonomousAgent):
             #print(self.car.center)
             print(f"{self.id}: n:")
             print(self.get_next_goal())
-        
+            #print(f"{self.id}: turning:" + str(self.turning))
+            #print(f"{self.id}: waiting:" + str(self.waiting_for_turn))
+        #[print(str(intersections[x]) + "-" + str(intersections[x].get_number_of_cars())) for x in intersections]
         self.update_intersection()
         if(self.is_decision_time() or self.in_decision):
+            print("its decision time")
             self.in_decision = True
-            self.get_best_movement()  ## steering
-            self.accelerate_0()       ## steering
+            self.get_best_movement()
+            self.accelerate_0()
             self.make_decision()
             self.apply_decision()
             #self.update_intersection()  ## nao sei, se mudo a ordem da um bug, ao contrario da outro...
