@@ -42,15 +42,15 @@ class AutonomousAgent:
                 car.heading = np.pi
 
     def update_intersection(self):    # adiciona o carro a intercecao
-        if self.id == 1:
-            print("updating intersection: " + str(self.id) + "{")
-            print("in_decision" + str(self.in_decision))
+        # if self.id == 1:
+            # print("updating intersection: " + str(self.id) + "{")
+            # print("in_decision" + str(self.in_decision))
 
         if self.current_intersection != None:# esta na intercecao
             #print("esta na intercecao")
             if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
                 print("changed intersection")
-                self.current_intersection.remove_car(self.car)
+                self.remove_intersection_data()
                 self.current_intersection = None
         else:   # nao esta na intercecao
             #print("nao esta na intercecao")
@@ -70,14 +70,19 @@ class AutonomousAgent:
         
             
     def is_decision_time(self):
-        #if self.cur_goal % 2 == 0:
-        #    return False
+        if self.cur_goal % 2 == 0:
+            return False
+        print("is_decision_time")
+        print(self.current_intersection)
+        print(self.cur_goal)
         if self.current_intersection != None: ## 
             dist = self.get_distance()
             dist_to_intersection = math.sqrt(dist[0]*dist[0] + dist[1]*dist[1])
 
             if self.get_brake_distance() >= dist_to_intersection:  ## MAKE DECISION
+                print("T")
                 return True
+        print("F")
         self.decision = False
         return False
 
@@ -204,8 +209,8 @@ class AutonomousAgent:
         return [x, y]
 
     def increment_cur_goal(self):
-        if self.id == 1:
-            print("incrementing-----------------------------------")
+        print(f"incrementing-----------------------------------{self.cur_goal-(-1)}")
+        
         if self.cur_goal != len(self.path)-1:
             print("success")
             self.cur_goal += 1
@@ -214,7 +219,7 @@ class AutonomousAgent:
         else:
             if self.current_intersection != None:
                 try:
-                    self.current_intersection.remove_car(self.car)
+                    self.remove_intersection_data()
                 except:
                     pass
             self.car.movable = False
