@@ -3,16 +3,34 @@ from geometry import Point
 
 
 class PhaseAgent(AutonomousAgent):
-    def __init__(self, car, path):
+    def __init__(self, car, path, id):
         super().__init__(car, path)
+        self.id = id
         self.last_decision = -1
+        self.stopping = False
 
     def is_agent_in_curr_phase(self):
+
+        if (self.current_intersection == None):
+            print('if (self.current_intersection == None):')
+            return True
+        
         relative_pos_to_int = self.current_intersection.get_relative_position(self.get_current_road(), self.get_next_road())
-    
+        curr_phase = self.calculate_curr_phase()
+        print(f'curr_phase: {curr_phase}')
+
+        if curr_phase == None:
+            return True
+        
+        if relative_pos_to_int in curr_phase:
+            return True
+        return False
+
     def calculate_curr_phase(self):
         phases = self.current_intersection.get_phases()
         state = self.current_intersection.get_state()
+        print(f'state: {state}')
+        print(f'phases: {phases}')
 
         if (len(phases) == 0):
             return None # not an intersection
@@ -42,10 +60,12 @@ class PhaseAgent(AutonomousAgent):
 
         if self.current_intersection != None:
             if not self.is_agent_in_curr_phase():
+                print(f'{self.id} not in phase')
                 self.stopping = True
                 self.decision = False
                 return
             else:
+                print(f'{self.id} in phase')
                 self.decision = True
 
     def apply_decision(self):
@@ -56,16 +76,20 @@ class PhaseAgent(AutonomousAgent):
         else: # se a decisao for negativa mas nao tiver mais a parar compara os timers:
             
             if self.is_agent_in_curr_phase():
+                print(f'{self.id} in phase')
                 self.decision = True
                 self.in_decision = False
                 self.update_intersection() # due to a bug keep this here
                 self.accelerate()
             else:
+                print(f'{self.id} not in phase')
                 self.accelerate_0()
     
     def update(self):
+        print(f'{self.id} updating decision {(self.is_decision_time() or self.in_decision)}')
         self.update_intersection()
         if (self.is_decision_time() or self.in_decision):
+            print(f'{self.id} in decision')
             self.in_decision = True
             self.get_best_movement()
             self.accelerate_0()
