@@ -7,6 +7,7 @@ import time
 from shared_variables import roads, dif_via, dt, TIMESTEP
 from autonomous_agents.greedy import Greedy
 from autonomous_agents.passive import Passive
+from autonomous_agents.social import Social
 
 DEBUG_ROAD_LINES = True # used to debug road lines
 TIME = 30   # time in seconds
@@ -86,7 +87,7 @@ autonomous_list = []
 #autonomous_list.append(Greedy(c4,["0","3","12","14","17", "9"]))
 autonomous_list.append(Passive(c2,["0","3","12","14","17", "9", "2"],0))
 
-autonomous_list.append(Passive(c3,["6","1","8", "16", "15"],1))
+autonomous_list.append(Passive(c3,["17", "9"]))
 for road in roads:
     goal  = roads[road]
     start = goal[0]
@@ -105,11 +106,11 @@ c2 = Car(Point(16, 53), 0, "green")
 c3 = Car(Point(251.5-1, 112 + dif_via*3), np.pi, "yellow")  #[251.5, 112 + dif_via*4]
 c4 = Car(Point(104-1, 122.5 + dif_via), np.pi)
 
-autonomous_list.append(Passive(c2,["1","8","11","12"],30))
+autonomous_list.append(Passive(c2,["19","11","12"],30))
 
-autonomous_list.append(Passive(c3,["28","19","11", "12"],40))
+autonomous_list.append(Passive(c3,["10","20"],1))
 
-autonomous_list.append(Passive(c4,["11","4","1"]))
+autonomous_list.append(Passive(c4,["8","16"]))
 
 world.add(c2)
 world.add(c3)

@@ -42,11 +42,18 @@ class AutonomousAgent:
                 car.heading = np.pi
 
     def update_intersection(self):    # adiciona o carro a intercecao
+        if self.id == 1:
+            print("updating intersection: " + str(self.id) + "{")
+            print("in_decision" + str(self.in_decision))
+
         if self.current_intersection != None:# esta na intercecao
+            #print("esta na intercecao")
             if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
+                print("changed intersection")
                 self.current_intersection.remove_car(self.car)
                 self.current_intersection = None
         else:   # nao esta na intercecao
+            #print("nao esta na intercecao")
             road_id = self.get_current_road()
             if self.get_next_goal() == roads[road_id][1]:  # se o proximo goal for o inicio de uma intersection
                 dist = self.get_distance()
@@ -54,6 +61,7 @@ class AutonomousAgent:
                 if dist < INTERSECTION_DISTANCE:
                     self.current_intersection = self.get_next_intersection() 
                     self.add_intersection_data() 
+        #   print("}")
 
     def get_brake_distance(self):
         cur_speed = self.car.speed
@@ -84,7 +92,7 @@ class AutonomousAgent:
     
     def add_intersection_data(self):                        
         #Add car and Current State 
-        self.current_intersection.add_car(self.car)                                        
+        self.current_intersection.add_car(self.car, self.get_current_road())                                        
 
         if self.cur_goal + 1 < len(self.path): #ha paths que acaba no inicio de uma intersection, entao da erro                                               
             curr_road = self.get_current_road()
@@ -196,10 +204,15 @@ class AutonomousAgent:
         return [x, y]
 
     def increment_cur_goal(self):
+        if self.id == 1:
+            print("incrementing-----------------------------------")
         if self.cur_goal != len(self.path)-1:
+            print("success")
             self.cur_goal += 1
+            #if self.cur_goal % 2 == 0:
+            #    self.update_intersection()
         else:
-            if self.current_intersection != None :
+            if self.current_intersection != None:
                 try:
                     self.current_intersection.remove_car(self.car)
                 except:
@@ -252,9 +265,13 @@ class AutonomousAgent:
         return self.turning[0] or self.turning[1] ## did it do something?
 
     def handle_point(self):
+        print("handling point")
+        if(self.id == 1):
+            print(f"point: {self.cur_goal}")
         if self.cur_goal % 2 == 0: 
+            print("unset here")
             self.in_decision = False
-        print("handling thing")
+        #print("handling thing")
         if self.car.debug:
             print("handling thing")
         last_dir = self.get_last_direction()
@@ -289,6 +306,8 @@ class AutonomousAgent:
         else:
             self.car.center = Point(prev_goal[0],self.car.center.y)
 
+        if self.cur_goal % 2 == 0: 
+            self.update_intersection()
 
     def get_best_movement(self):
         print("Autonomous_agent: get_best_movement not implemented for this class")
