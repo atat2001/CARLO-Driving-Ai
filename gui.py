@@ -79,9 +79,9 @@ world.add(RectangleBuilding(Point(291 + line, 100.5), Point(25 - line*1.5, 175.5
 ''' TESTES'''
 
 # Teste Cars
-c1 = Car(Point(20, 20), np.pi/2)
+c1 = Car(Point(20, 20), np.pi/2, "yellow")
 c2 = Car(Point(25.5, 20), np.pi/2, "blue")
-c3 = Car(Point(6, 53), 0, "blue")
+c3 = Car(Point(6, 53), 0, "green")
 autonomous_list = []
 #c4 = Car(Point(25.5, 22), np.pi/2)
 #autonomous_list.append(Greedy(c4,["0","3","12","14","17", "9"]))
@@ -89,10 +89,14 @@ if False:
     autonomous_list.append(Passive(c2,["0","3","12","14","17", "9", "2"], 0))
     autonomous_list.append(Passive(c3,["0","3","12","14","17", "9", "2"], 1))
 else:
+    autonomous_list.append(Greedy(c1,["6","1","8","16"], 0))
     autonomous_list.append(Passive(c2,["6","1","8","16"], 0))
-    autonomous_list.append(Greedy(c3,["17","9","2"], 1))
+    autonomous_list.append(Greedy(c3,["6","1","8","16"], 1))
+    c1.center = Point(c1.center.x,c1.center.y)
+    c2.center = Point(c2.center.x + 2,c2.center.y)
+    c3.center = Point(c3.center.x - 4,c3.center.y)
 
-c3.center = Point(c3.center.x, c3.center.y+5)
+
 for road in roads:
     goal  = roads[road]
     start = goal[0]
@@ -102,7 +106,7 @@ for road in roads:
     #world.add(Pedestrian(Point(start[0], start[1]), np.pi))
     #world.add(Pedestrian(Point(end[0], end[1]), np.pi))
 
-#world.add(c1)
+world.add(c1)
 world.add(c2)
 world.add(c3)
 #world.add(c4)

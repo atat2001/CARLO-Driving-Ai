@@ -102,6 +102,7 @@ class PhaseAgent(AutonomousAgent):
             self.make_decision()
             self.apply_decision()
             #self.update_intersection()  ## nao sei, se mudo a ordem da um bug, ao contrario da outro...
+        self.stop_for_car_in_front()
         self.car.set_control(self.steering, self.throttle)
 
         ##### greedy things

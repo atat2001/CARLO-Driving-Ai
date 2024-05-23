@@ -39,7 +39,7 @@ class AutonomousAgent:
         ## do once cur_objective % 2 == 0
         if self.cur_goal % 2 == 1:
             roads_to_cars[self.roads[(self.cur_goal-2)// 2]] = [car for car in roads_to_cars.get(self.roads[(self.cur_goal-2)// 2],[]) if car != self.car]
-            roads_to_cars[self.roads[(self.cur_goal)// 2]] = roads_to_cars.get(self.roads[(self.cur_goal)// 2],[]) + [self.car]
+            roads_to_cars[self.get_current_road()] = roads_to_cars.get(self.get_current_road(),[]) + [self.car]
             self.car.passed_objective = False
         else:
             self.car.passed_objective = self.decision
@@ -73,9 +73,28 @@ class AutonomousAgent:
                 smallest_bigger_car = car
         if smallest_bigger_car == None:
             return None
-        return [smallest_bigger_car, diff_norm-smallest_bigger_car_diff_norm]
+        print("returning car\n")
+        return smallest_bigger_car
 
-
+    def stop_for_car_in_front(self):
+        aux = self.get_car_in_front()
+        if aux != None:
+            if aux.passed_objective:
+                last_point = self.get_next_goal()
+                cur_point = self.get_position()
+                dist = abs(last_point[0] - cur_point[0] + last_point[1] - cur_point[1])
+            else:
+                dist = abs(self.car.center.x - aux.center.x + self.car.center.y - aux.center.y)
+            ## estamos a assumir que estao em linha reta, ou seja um vai estar a 0
+            print(f"distance is: {dist}")
+            print(f"from: {self.car.color} to: {aux.color}")
+            min_distance = self.get_brake_distance() + 5
+            print(f"min_dist is {min_distance}\n\n")
+            #if self.car.color == "yellow":
+                #exit()
+            if(dist < min_distance):
+                print("breaking \n\n")
+                self.deaccelerate()
 
 ################################################################################################################################################
 ################################################################################################################################################
@@ -113,7 +132,7 @@ class AutonomousAgent:
     def get_brake_distance(self):
         cur_speed = self.car.speed
         time_breaking = cur_speed/THROTTLE + 2*TIMESTEP
-        return cur_speed*time_breaking - 0.5*THROTTLE*time_breaking*time_breaking # o copilot escreveu isto e estava certo :O
+        return max(cur_speed*time_breaking - 0.5*THROTTLE*time_breaking*time_breaking,0) # o copilot escreveu isto e estava certo :O
         
             
     def is_decision_time(self):
