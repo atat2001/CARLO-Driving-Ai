@@ -85,9 +85,14 @@ c3 = Car(Point(6, 53), 0, "blue")
 autonomous_list = []
 #c4 = Car(Point(25.5, 22), np.pi/2)
 #autonomous_list.append(Greedy(c4,["0","3","12","14","17", "9"]))
-autonomous_list.append(PhaseAgent(c2,["0","3","12","14","17", "9", "2"]))
+if False:
+    autonomous_list.append(Passive(c2,["0","3","12","14","17", "9", "2"], 0))
+    autonomous_list.append(Passive(c3,["0","3","12","14","17", "9", "2"], 1))
+else:
+    autonomous_list.append(Passive(c2,["6","1","8","16"], 0))
+    autonomous_list.append(Greedy(c3,["17","9","2"], 1))
 
-autonomous_list.append(Passive(c3,["17", "9"]))
+c3.center = Point(c3.center.x, c3.center.y+5)
 for road in roads:
     goal  = roads[road]
     start = goal[0]
@@ -97,7 +102,7 @@ for road in roads:
     #world.add(Pedestrian(Point(start[0], start[1]), np.pi))
     #world.add(Pedestrian(Point(end[0], end[1]), np.pi))
 
-world.add(c1)
+#world.add(c1)
 world.add(c2)
 world.add(c3)
 #world.add(c4)
@@ -105,7 +110,7 @@ world.add(c3)
 c2 = Car(Point(16, 53), 0, "green")
 c3 = Car(Point(251.5-1, 112 + dif_via*3), np.pi, "yellow")  #[251.5, 112 + dif_via*4]
 c4 = Car(Point(104-1, 122.5 + dif_via), np.pi)
-
+"""
 autonomous_list.append(Passive(c2,["19","11","12"],30))
 
 autonomous_list.append(Passive(c3,["10","20"],1))
@@ -115,10 +120,10 @@ autonomous_list.append(Passive(c4,["8","16"]))
 world.add(c2)
 world.add(c3)
 world.add(c4)
-
+"""
 world.render()
 for aut in autonomous_list:  ## used to update intersections in spawn
-    aut.update()
+    aut.update_intersection()
 from interactive_controllers import KeyboardController
 controller = KeyboardController(world)
 start_time = time.time()
@@ -126,10 +131,11 @@ while True:
     #print("tick")
     if time.time() - start_time > TIME:
         break
-    c1.set_control(controller.steering, controller.throttle)
+    #c1.set_control(controller.steering, controller.throttle)
     for aut in autonomous_list:
         aut.update()
     world.tick() 
+    print("tick ")
     world.render()
     time.sleep(TIMESTEP) 
     

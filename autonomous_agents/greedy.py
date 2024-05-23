@@ -1,7 +1,8 @@
 from autonomous_agents.autonomous_agents import AutonomousAgent
 
 class Greedy(AutonomousAgent):
-    def __init__(self, car, path):
+    def __init__(self, car, path, id):
+        self.id = id
         super().__init__(car, path)
 
     ##### greedy things
@@ -22,6 +23,7 @@ class Greedy(AutonomousAgent):
             self.accelerate()
 
     def update(self):
+        self.decision = True
         #print(self.get_next_intersection())
         #print(self.get_current_road())
         if self.car.debug:
@@ -30,14 +32,11 @@ class Greedy(AutonomousAgent):
             print("turning:" + str(self.turning))
             print("waiting:" + str(self.waiting_for_turn))
         #[print(str(intersections[x]) + "-" + str(intersections[x].get_number_of_cars())) for x in intersections]
-        self.update_intersection()
         self.get_best_movement()
+        if self.cur_goal % 2 == 1:
+            self.update_intersection()
         self.car.set_control(self.steering, self.throttle)
 
-    def mock_update(self):
-        print(self.get_next_goal())
-        self.get_best_movement()
-        self.car.set_control(self.steering, self.throttle)
 
 
 ## Curvas: o agente a virar para a esquerda andara 5.32 unidades para a frente e 9.32 para a esquerda.

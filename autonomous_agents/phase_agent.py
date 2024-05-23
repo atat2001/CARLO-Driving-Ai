@@ -52,8 +52,8 @@ class PhaseAgent(AutonomousAgent):
 
         return phases[chosen_phase]
     
-    def update_decision(self):
-        if self.cur_goal  == self.last_decision or (self.cur_goal%2  == 0 and self.last_decision  == self.cur_goal-1):  ## only do decision once, on first point
+    def make_decision(self):
+        if self.cur_goal % 2 == 0 or self.cur_goal < self.last_decision+2:  ## only do decision once, on first point
             return
         
         self.last_decision  = self.cur_goal
@@ -68,7 +68,7 @@ class PhaseAgent(AutonomousAgent):
             else:
                 print(f'{self.id} in phase')
                 self.decision  = True
-                #self.stopping = False
+                
 
     def apply_decision(self):
         if self.decision:  ## se a decisao for positiva vai
@@ -77,13 +77,13 @@ class PhaseAgent(AutonomousAgent):
             self.stop_car()
         else: # se a decisao for negativa mas nao tiver mais a parar compara os timers:
             b  = False
-            if self.cur_goal % 2  == 0:
+            if self.cur_goal % 2  == 0:    # eu ja nao me lembro o pq disto, devia ter usado nomes de vars melhores... conseguem mudar/melhorar isso pls se perceberem
                 b  = True
                 self.cur_goal -= 1
             if self.is_agent_in_curr_phase():
                 print(f'{self.id} in phase')
                 self.decision  = True
-                # self.in_decision  = False
+                self.in_decision  = False  ## isto estava comented mas no passive ja nao esta entao nao sei, talvez comment
                 self.update_intersection() # due to a bug keep this here
                 self.accelerate()
             else:
@@ -91,34 +91,31 @@ class PhaseAgent(AutonomousAgent):
                 self.accelerate_0()
             if b:
                 self.cur_goal += 1
-                # self.update_intersection()
-        print(f"decision(stop): {self.stopping}")
-        print("leonor")
-    
+
     def update(self):
-        self.update_intersection()
-        self.get_best_movement()
-        if (self.is_decision_time() or self.in_decision):
-            print(f'{self.is_decision_time()} or {self.in_decision}')
-            self.in_decision  = True
-            self.accelerate_0()
-            self.update_decision()
+        self.get_best_movement()  ## used to update point, intersection and steering
+        if self.cur_goal % 2 == 1: 
+            self.update_intersection()
+        if(self.in_decision or self.is_decision_time()):
+            self.in_decision = True
+            self.accelerate_0()       ## steering
+            self.make_decision()
             self.apply_decision()
+            #self.update_intersection()  ## nao sei, se mudo a ordem da um bug, ao contrario da outro...
         self.car.set_control(self.steering, self.throttle)
 
-    def get_best_movement(self): # redundant function from greedy.py and passive.py
-        if self.cur_goal % 2  == 0:
-            self.update_intersection()
+        ##### greedy things
+    def get_best_movement(self):
         if self.turn_handler(): ## do curva as fast as possible
             self.accelerate()
-            d  = self.get_distance()
-            if d[0]  == 0 and d[1]  == 0: ## se chegou a um ponto
+            d = self.get_distance()
+            if d[0] == 0 and d[1] == 0: ## se chegou a um ponto
                 self.handle_point()
             return
-        d  = self.get_distance()
-        if d[0]  == 0 and d[1]  == 0: ## se chegou a um ponto
+        d = self.get_distance()
+        if d[0] == 0 and d[1] == 0: ## se chegou a um ponto
             self.handle_point()  ## handle it
-        elif d[0]  == 0 or d[1]  == 0: ## esta numa reta
+        elif d[0] == 0 or d[1] == 0: ## esta numa reta
             self.accelerate()
         else:
             self.accelerate()

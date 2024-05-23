@@ -1,6 +1,6 @@
 import numpy as np
 from geometry import Point  
-from shared_variables import dif_via, SIDE_TURN, roads, road_to_intersection, intersections, INTERSECTION_DISTANCE, THROTTLE, TIMESTEP
+from shared_variables import dif_via, SIDE_TURN, roads, road_to_intersection, intersections, INTERSECTION_DISTANCE, THROTTLE, TIMESTEP,roads_to_cars
 from enum import Enum
 import time
 import math
@@ -28,7 +28,57 @@ class AutonomousAgent:
         self.stop = False
         self.decision = False
         self.in_decision = False
+        roads_to_cars[self.get_current_road()] = roads_to_cars.get(self.get_current_road(),[]) + [self.car]
 
+    def set_decision(self,b):
+        if b == True:
+            self.car.passed_objective = True
+        self.decision = b
+
+    def update_current_road(self):
+        ## do once cur_objective % 2 == 0
+        if self.cur_goal % 2 == 1:
+            roads_to_cars[self.roads[(self.cur_goal-2)// 2]] = [car for car in roads_to_cars.get(self.roads[(self.cur_goal-2)// 2],[]) if car != self.car]
+            roads_to_cars[self.roads[(self.cur_goal)// 2]] = roads_to_cars.get(self.roads[(self.cur_goal)// 2],[]) + [self.car]
+            self.car.passed_objective = False
+        else:
+            self.car.passed_objective = self.decision
+
+    def get_cars_in_road(self):
+        if self.cur_goal % 2 == 0:
+            return []
+        return roads_to_cars.get(self.get_current_road(), [])
+
+    def get_car_in_front(self):
+        if self.car.movable == False:
+            return None
+        cars = self.get_cars_in_road()
+        if len(cars) == 0:
+            return None
+        last_point = self.get_next_goal()
+        cur_point = self.get_position()
+        diff = [last_point[0] - cur_point[0], last_point[1] - cur_point[1]]
+        diff_norm = diff[0]*diff[0]+diff[1]+diff[1]
+        smallest_bigger_car = None
+        smallest_bigger_car_diff_norm = None
+        for car in self.get_cars_in_road():
+            if car.movable == False:
+                continue
+            car_diff = [last_point[0] - car.center.x, last_point[1] - car.center.y]
+            car_diff_norm = car_diff[0]*car_diff[0]+car_diff[1]+car_diff[1]
+            if car.passed_objective:
+                car_diff_norm = 0 
+            if car_diff_norm < diff_norm and (smallest_bigger_car_diff_norm == None or car_diff_norm > smallest_bigger_car_diff_norm):
+                smallest_bigger_car_diff_norm = car_diff_norm
+                smallest_bigger_car = car
+        if smallest_bigger_car == None:
+            return None
+        return [smallest_bigger_car, diff_norm-smallest_bigger_car_diff_norm]
+
+
+
+################################################################################################################################################
+################################################################################################################################################
     def init_car(self):
         car = self.car
         car.center = Point((roads[self.roads[0]][0][0] + roads[self.roads[0]][1][0])/2, (roads[self.roads[0]][1][1] + roads[self.roads[0]][0][1])/2)
@@ -42,23 +92,20 @@ class AutonomousAgent:
                 car.heading = np.pi
 
     def update_intersection(self):    # adiciona o carro a intercecao
-        # if self.id == 1:
-            # print("updating intersection: " + str(self.id) + "{")
-            # print("in_decision" + str(self.in_decision))
-
         if self.current_intersection != None:# esta na intercecao
             #print("esta na intercecao")
             if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
                 print("changed intersection")
                 self.remove_intersection_data()
                 self.current_intersection = None
-        else:   # nao esta na intercecao
+        if self.current_intersection == None:   # nao esta na intercecao
             #print("nao esta na intercecao")
             road_id = self.get_current_road()
             if self.get_next_goal() == roads[road_id][1]:  # se o proximo goal for o inicio de uma intersection
                 dist = self.get_distance()
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
                 if dist < INTERSECTION_DISTANCE:
+                    print("added to intersection")
                     self.current_intersection = self.get_next_intersection() 
                     self.add_intersection_data() 
         #   print("}")
@@ -72,18 +119,13 @@ class AutonomousAgent:
     def is_decision_time(self):
         if self.cur_goal % 2 == 0:
             return False
-        print("is_decision_time")
-        print(self.current_intersection)
-        print(self.cur_goal)
         if self.current_intersection != None: ## 
             dist = self.get_distance()
             dist_to_intersection = math.sqrt(dist[0]*dist[0] + dist[1]*dist[1])
 
             if self.get_brake_distance() >= dist_to_intersection:  ## MAKE DECISION
-                print("T")
+                print("is_decision_time " + str(self.id))
                 return True
-        print("F")
-        self.decision = False
         return False
 
     def get_current_road(self):
@@ -270,12 +312,6 @@ class AutonomousAgent:
         return self.turning[0] or self.turning[1] ## did it do something?
 
     def handle_point(self):
-        print("handling point")
-        if(self.id == 1):
-            print(f"point: {self.cur_goal}")
-        if self.cur_goal % 2 == 0: 
-            print("unset here")
-            self.in_decision = False
         #print("handling thing")
         if self.car.debug:
             print("handling thing")
@@ -311,8 +347,10 @@ class AutonomousAgent:
         else:
             self.car.center = Point(prev_goal[0],self.car.center.y)
 
-        if self.cur_goal % 2 == 0: 
+        if self.cur_goal % 2 == 1: 
+            self.in_decision = False
             self.update_intersection()
+        self.update_current_road()
 
     def get_best_movement(self):
         print("AutonomousAgent: get_best_movement not implemented for this class")

@@ -12,6 +12,7 @@ class Entity:
         self.color = 'ghost white'
         self.collidable = True
         self.debug = False
+        self.passed_objective = False
         if movable:
             self.friction = friction
             self.velocity = Point(0,0) # this is xp, yp

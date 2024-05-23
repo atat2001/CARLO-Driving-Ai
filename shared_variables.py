@@ -195,6 +195,7 @@ BREAK_TIME_SQUARED = (MAXIMUM_SPEED*MAXIMUM_SPEED)/(THROTTLE*THROTTLE)
 # this is to make sure it allways has time to break
 INTERSECTION_DISTANCE = 900  ## distance to the intersection to start slowing down (consider it squared so 900=30, 400 = 20)
 intersections = dict()
+roads_to_cars = dict()
 
 
 """paths = {"1":["","","","",""],

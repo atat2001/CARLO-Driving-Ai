@@ -75,14 +75,12 @@ class Intersection: #(ABC):
         pass
 
     def add_car(self, car, road):
-        if road == "15":
-            print("added\n\n\n")
+        print("adding car")
         self.cars.append(car)
         self.car_to_road[car] = road    
     
     def remove_car(self, car):
-        if self.car_to_road[car] == '15':
-            print("removed\n\n\n")
+        print("removing car")
         self.cars.remove(car)
         del self.car_to_road[car]
 

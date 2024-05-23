@@ -9,7 +9,7 @@ class Passive(AutonomousAgent):
         super().__init__(car, path)
         self.id = id
         self.stop_time = 0
-        self.last_decision = -1
+        self.last_decision = -3
         self.stopping = False
         self.rng = 0
 
@@ -19,8 +19,6 @@ class Passive(AutonomousAgent):
 
         ##### greedy things
     def get_best_movement(self):
-        if self.cur_goal % 2 == 0:
-            self.update_intersection()
         if self.turn_handler(): ## do curva as fast as possible
             self.accelerate()
             d = self.get_distance()
@@ -36,11 +34,11 @@ class Passive(AutonomousAgent):
             self.accelerate()
 
     def make_decision(self):
-        if self.cur_goal == self.last_decision or (self.cur_goal%2 == 0 and self.last_decision == self.cur_goal-1):  ## only do decision once, on first point
+        if self.cur_goal % 2 == 0 or self.cur_goal < self.last_decision+2:  ## only do decision once, on first point
             return
         
         self.last_decision = self.cur_goal
-
+        print("making decision")
         if self.current_intersection != None:   
             if self.current_intersection.get_number_of_cars() > 1:
                 print(f"{self.id}: stopping")
@@ -49,7 +47,8 @@ class Passive(AutonomousAgent):
                 return
             else:
                 print(f"{self.id}: going")
-                self.decision = True
+                self.set_decision(True)
+                #self.decision = True
 
     def stop_car(self):
         if(self.car.speed > 0):
@@ -57,7 +56,7 @@ class Passive(AutonomousAgent):
         else:
             self.car.velocity = Point(0,0)
             self.stop_time = time.time()
-            self.rng = 1 + random.randint(1, 20)/10
+            self.rng = 1 + random.randint(1, 20)/100
             self.stopping = False
     
 
@@ -65,11 +64,12 @@ class Passive(AutonomousAgent):
         if self.decision:  ## se a decisao for positiva vai
             self.accelerate()
         elif self.stopping:   ## se a decisao for negativa e estiver a parar continua a parar
+            print("stopping " + str(self.id))
             self.stop_car()
-        
         else: # se a decisao for negativa mas nao tiver mais a parar compara os timers:
             if self.try_to_go():    ## phases
-                self.decision = True
+                #self.decision = True
+                self.set_decision(True)
                 self.in_decision = False
                 self.update_intersection() # due to a bug keep this here
                 self.accelerate()
@@ -77,24 +77,14 @@ class Passive(AutonomousAgent):
                 self.accelerate_0()
 
     def update(self):
-        if self.car.debug:
-            #print(self.car.center)
-            print(f"{self.id}: n:")
-            print(self.get_next_goal())
+        self.get_best_movement()  ## used to update point, intersection and steering
         
-        self.update_intersection()
-        if(self.is_decision_time() or self.in_decision):
+        if self.cur_goal % 2 == 1: 
+            self.update_intersection()
+        if(self.in_decision or self.is_decision_time()):
             self.in_decision = True
-            self.get_best_movement()  ## steering
             self.accelerate_0()       ## steering
             self.make_decision()
             self.apply_decision()
             #self.update_intersection()  ## nao sei, se mudo a ordem da um bug, ao contrario da outro...
-        else:
-            self.get_best_movement()
-        self.car.set_control(self.steering, self.throttle)
-
-    def mock_update(self):
-        print(self.get_next_goal())
-        self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)

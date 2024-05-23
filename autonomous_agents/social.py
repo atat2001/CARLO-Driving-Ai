@@ -19,8 +19,6 @@ class Social(AutonomousAgent):
 
         ##### greedy things
     def get_best_movement(self):
-        if self.cur_goal % 2 == 0:
-            self.update_intersection()
         if self.turn_handler(): ## do curva as fast as possible
             self.accelerate()
             d = self.get_distance()
@@ -32,23 +30,25 @@ class Social(AutonomousAgent):
             self.handle_point()  ## handle it
         elif d[0] == 0 or d[1] == 0: ## esta numa reta
             self.accelerate()
-        else:  ## 
+        else:
             self.accelerate()
 
     def make_decision(self):
-        if self.cur_goal == self.last_decision or (self.cur_goal%2 == 0 and self.last_decision == self.cur_goal-1):  ## only do decision once, on first point
+        if self.cur_goal % 2 == 0 or self.cur_goal < self.last_decision+2:  ## only do decision once, on first point
             return
-        self.last_decision = self.cur_goal
 
+        self.last_decision = self.cur_goal
+        print("making decision")
         if self.current_intersection != None:
             if not(self.current_intersection.has_priority(self)):
                 print(f"{self.id}: stopping")
-                self.stopping = True                     # define que o carro vai ter de parar asap
+                self.stopping = True    # define que o carro vai ter de parar asap
                 self.decision = False
                 return
             else:
                 print(f"{self.id}: going")
-                self.decision = True
+                self.set_decision(True)
+                #self.decision = True
 
     def stop_car(self):
         if(self.car.speed > 0):
@@ -56,10 +56,9 @@ class Social(AutonomousAgent):
         else:
             self.car.velocity = Point(0,0)
             self.stop_time = time.time()
-            self.rng = 1 + random.randint(1, 20)/10
+            self.rng = 1 + random.randint(1, 20)/10 # not used here right?
             self.stopping = False
     
-
     def apply_decision(self):
         if self.decision:  ## se a decisao for positiva vai
             self.accelerate()
@@ -67,36 +66,23 @@ class Social(AutonomousAgent):
             self.stop_car()
         else: # se a decisao for negativa mas nao tiver mais a parar compara os timers:
             if self.try_to_go():
-                self.decision = True
-                print("updating in_decision: social")
-                ###self.in_decision = False
+                self.set_decision(True)
+                #self.decision = True
+                self.in_decision = False
                 self.update_intersection() # due to a bug keep this here
                 self.accelerate()
             else:
                 self.accelerate_0()
 
     def update(self):
-        if self.car.debug:
-            #print(self.car.center)
-            print(f"{self.id}: n:")
-            print(self.get_next_goal())
-            #print(f"{self.id}: turning:" + str(self.turning))
-            #print(f"{self.id}: waiting:" + str(self.waiting_for_turn))
-        #[print(str(intersections[x]) + "-" + str(intersections[x].get_number_of_cars())) for x in intersections]
-        self.update_intersection()
-        if(self.is_decision_time() or self.in_decision):
-            print("its decision time")
+        self.get_best_movement()  ## used to update point, intersection and steering
+        
+        if self.cur_goal % 2 == 1: 
+            self.update_intersection()
+        if(self.in_decision or self.is_decision_time()):
             self.in_decision = True
-            self.get_best_movement()
-            self.accelerate_0()
+            self.accelerate_0()       ## steering
             self.make_decision()
             self.apply_decision()
             #self.update_intersection()  ## nao sei, se mudo a ordem da um bug, ao contrario da outro...
-        else:
-            self.get_best_movement()
-        self.car.set_control(self.steering, self.throttle)
-
-    def mock_update(self):
-        print(self.get_next_goal())
-        self.get_best_movement()
         self.car.set_control(self.steering, self.throttle)
