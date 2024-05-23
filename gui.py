@@ -6,6 +6,7 @@ from shared_variables import roads, dt, paths
 from autonomous_agents.passive import Passive
 from autonomous_agents.greedy import Greedy
 from autonomous_agents.social import Social
+from autonomous_agents.phase_agent import PhaseAgent
 
 DEBUG_ROAD_LINES = True # used to debug road lines
 TIME = 30               # time in seconds
@@ -72,15 +73,14 @@ world.add(RectangleBuilding(Point(175 + offset + line, 4), Point(70 + offset + l
 world.add(Painting(Point(291, 101), Point(25, 164.5), 'gray80'))
 world.add(RectangleBuilding(Point(291 + line, 100.5), Point(25 - line*1.5, 175.5)))
 
-# Show Lines
+''' TESTES'''
+
 for road in roads:
     goal  = roads[road]
     start = goal[0]
     end   = goal[1]
     if DEBUG_ROAD_LINES:
         world.add(Line(Point(start[0], start[1]), Point(end[0], end[1])))       
-
-
 
 '''TESTES'''
 
@@ -90,7 +90,7 @@ autonomous_agents = []
 ## tantos autonomous agents quanto paths, depois mudar isto
 for path in paths:
     car = Car()
-    autonomous_agents.append(Passive(car,path))
+    autonomous_agents.append(PhaseAgent(car,path))
 
 world.render()
 

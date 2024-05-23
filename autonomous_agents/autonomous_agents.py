@@ -151,7 +151,10 @@ class AutonomousAgent:
         return self.roads[self.cur_goal // 2]
     
     def get_next_road(self):
-        return self.roads[(self.cur_goal + 2)// 2] 
+        if (self.cur_goal + 2) // 2 < len(self.roads):
+            return self.roads[(self.cur_goal + 2) // 2]
+        else:
+            return None
 
     def get_next_intersection(self):
         return intersections[road_to_intersection[self.get_current_road()]]
