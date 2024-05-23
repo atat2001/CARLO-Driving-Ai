@@ -73,16 +73,14 @@ world.add(RectangleBuilding(Point(175 + offset + line, 4), Point(70 + offset + l
 world.add(Painting(Point(291, 101), Point(25, 164.5), 'gray80'))
 world.add(RectangleBuilding(Point(291 + line, 100.5), Point(25 - line*1.5, 175.5)))
 
-''' TESTES'''
-
 for road in roads:
     goal  = roads[road]
     start = goal[0]
     end   = goal[1]
     if DEBUG_ROAD_LINES:
-        world.add(Line(Point(start[0], start[1]), Point(end[0], end[1])))       
+        world.add(Line(Point(start[0], start[1]), Point(end[0], end[1])))
 
-'''TESTES'''
+''' TESTES'''
 
 autonomous_agents = []
 

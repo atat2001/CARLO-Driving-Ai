@@ -104,7 +104,9 @@ class World:
     
     def run(self, autonomous_agents, n_max_cars): 
         active_agents = autonomous_agents[:n_max_cars]
-        next_agent_index = n_max_cars  
+        next_agent_index = n_max_cars
+        arrived_count = 0
+        collided_count = 0
 
         for aut in active_agents: 
             self.add(aut.car) 
@@ -126,6 +128,8 @@ class World:
             # Remove agents that arrived to final destination or are involved in a collision
             arrived_agents = [agent for agent in active_agents if not agent.car.movable]
             collision_agents = self.collision_exists(autonomous_agents)
+            arrived_count += len(arrived_agents)
+            collided_count += len(collision_agents)
             to_remove = set(arrived_agents + collision_agents)
 
             if to_remove:
@@ -140,8 +144,9 @@ class World:
                     self.add(new_agent.car)
                     new_agent.update()
                     new_agent.update_current_road()   
-                    next_agent_index += 1                 
-        
+                    next_agent_index += 1
+                                     
+        print(f"Arrived: {arrived_count}, Collided: {collided_count}")
     
     def close(self):
         self.reset()
