@@ -1,9 +1,11 @@
 from entities import Entity
 from visualizer import Visualizer
 import time
-from shared_variables import intersections, intersection_roads, intersection_phases
+from shared_variables import intersections, intersection_roads, intersection_phases, TIMESTEP
 from intersection.intersection import Intersection
 
+DEBUG_ROAD_LINES = True # used to debug road lines
+TIME = 30               # time in seconds
 
 class World:
     def __init__(self, dt: float, width: float, height: float, ppm: float = 8):
@@ -12,11 +14,9 @@ class World:
         self.t  = 0  # simulation time
         self.dt = dt # simulation time step
         self.visualizer = Visualizer(width, height, ppm=ppm)
-        self.last_tick_time = time.time()
-                        
+        self.last_tick_time = time.time()                        
         self.initialize_intersections()
                 
-
     @property
     def agents(self):
         return self.static_agents + self.dynamic_agents
@@ -39,30 +39,41 @@ class World:
         self.visualizer.create_window(bg_color = 'gray')
         self.visualizer.update_agents(self.agents)        
     
-    def initialize_intersections(self):       
-        #Atualiza as intersections do shared_variables e depois os agentes acedem a isso      
+    def initialize_intersections(self):               
         for id, roads in intersection_roads.items():
-            intersections[id] = Intersection(id, roads, intersection_phases[id])        
-        
-    def collision_exists(self, agent = None):
+            intersections[id] = Intersection(id, roads, intersection_phases[id])    
+    
+    def delete_dynamic_agent(self, agent):
+        self.dynamic_agents.remove(agent)
+
+    def find_agent_by_car(self, car, autonomous_agents):
+        for agent in autonomous_agents:
+            if agent.car == car:
+                return agent
+        return None
+
+    def collision_exists(self, agents, agent = None):
         if agent is None:
             for i in range(len(self.dynamic_agents)):
                 for j in range(i+1, len(self.dynamic_agents)):
                     if self.dynamic_agents[i].collidable and self.dynamic_agents[j].collidable:
-                        if self.dynamic_agents[i].collidesWith(self.dynamic_agents[j]):
-                            return True
+                        if self.dynamic_agents[i].collidesWith(self.dynamic_agents[j]):  
+                            print(self.dynamic_agents[j])
+                            agent1 = self.find_agent_by_car(self.dynamic_agents[i], agents)
+                            agent2 = self.find_agent_by_car(self.dynamic_agents[j], agents)                                                      
+                            return [agent1, agent2]
                 for j in range(len(self.static_agents)):
                     if self.dynamic_agents[i].collidable and self.static_agents[j].collidable:
                         if self.dynamic_agents[i].collidesWith(self.static_agents[j]):
-                            return True
-            return False
-            
-        if not agent.collidable: return False
+                            return []
+            return []
         
+        if not agent.collidable: return []
+
         for i in range(len(self.agents)):
             if self.agents[i] is not agent and self.agents[i].collidable and agent.collidesWith(self.agents[i]):
-                return True
-        return False
+                return self.agents[i]
+        return []    
     
     def get_collisions(self):
         collisions = []
@@ -75,7 +86,46 @@ class World:
                 if self.dynamic_agents[i].collidable and self.static_agents[j].collidable:
                     if self.dynamic_agents[i].collidesWith(self.static_agents[j]):
                         collisions.append((self.dynamic_agents[i], self.static_agents[j]))
-        return collisions
+        return collisions  
+    
+    def run(self, autonomous_agents, n_max_cars): 
+        active_agents = autonomous_agents[:n_max_cars]
+        next_agent_index = n_max_cars  
+
+        for aut in active_agents: 
+            self.add(aut.car) 
+            aut.update()        
+        start_time = time.time()
+
+        while True:            
+            if time.time() - start_time > TIME:
+                break
+            if not active_agents:
+                break            
+            for aut in active_agents:
+                aut.update()
+            self.tick() 
+            self.render()
+            time.sleep(TIMESTEP)
+
+            # Remove agents that arrived to final destination or are involved in a collision
+            arrived_agents = [agent for agent in active_agents if not agent.car.movable]
+            collision_agents = self.collision_exists(autonomous_agents)
+            to_remove = set(arrived_agents + collision_agents)
+
+            if to_remove:
+                active_agents = [agent for agent in active_agents if agent not in to_remove]
+                for agent in to_remove:
+                    self.delete_dynamic_agent(agent.car)
+
+                # Add new agents to replace the ones that were removed
+                while len(active_agents) < n_max_cars and next_agent_index < len(autonomous_agents):
+                    new_agent = autonomous_agents[next_agent_index]
+                    active_agents.append(new_agent)                    
+                    self.add(new_agent.car)
+                    new_agent.update()
+                    next_agent_index += 1                 
+        
     
     def close(self):
         self.reset()

@@ -6,18 +6,19 @@ class PhaseAgent(AutonomousAgent):
     def __init__(self, car, path, id):
         super().__init__(car, path)
         self.id  = id
+        self.car.color = 'green'
         self.last_decision  = -1
         self.stopping  = False
 
     def is_agent_in_curr_phase(self):
 
         if (self.current_intersection  == None):
-            print('if (self.current_intersection  == None):')
+            #print('if (self.current_intersection  == None):')
             return True
         
         relative_pos_to_int  = self.current_intersection.get_relative_position(self.get_current_road(), self.get_next_road())
-        print(f'({self.get_current_road()}, {self.get_next_road()})')
-        print('relative_pos_to_int', relative_pos_to_int)
+        #print(f'({self.get_current_road()}, {self.get_next_road()})')
+        #print('relative_pos_to_int', relative_pos_to_int)
         curr_phase  = self.calculate_curr_phase()
         # print(f'curr_phase: {curr_phase}')
 
@@ -31,7 +32,7 @@ class PhaseAgent(AutonomousAgent):
     def calculate_curr_phase(self):
         phases  = self.current_intersection.get_phases()
         state   = self.current_intersection.get_state()
-        print(f'state: {state}')
+        #print(f'state: {state}')
         if (len(phases)  == 0):
             return None # not an intersection
 
@@ -60,13 +61,13 @@ class PhaseAgent(AutonomousAgent):
 
         if self.current_intersection != None:
             if not self.is_agent_in_curr_phase():
-                print(f'{self.id} not in phase')
-                print(self.is_agent_in_curr_phase())
-                print("-----------------")  
+                #print(f'{self.id} not in phase')
+                #print(self.is_agent_in_curr_phase())
+                #print("-----------------")  
                 self.stopping  = True
                 self.decision  = False
             else:
-                print(f'{self.id} in phase')
+                #print(f'{self.id} in phase')
                 self.decision  = True
                 
 
@@ -81,13 +82,13 @@ class PhaseAgent(AutonomousAgent):
                 b  = True
                 self.cur_goal -= 1
             if self.is_agent_in_curr_phase():
-                print(f'{self.id} in phase')
+                #print(f'{self.id} in phase')
                 self.decision  = True
                 self.in_decision  = False  ## isto estava comented mas no passive ja nao esta entao nao sei, talvez comment
                 self.update_intersection() # due to a bug keep this here
                 self.accelerate()
             else:
-                print(f'{self.id} not in phase')
+                #print(f'{self.id} not in phase')
                 self.accelerate_0()
             if b:
                 self.cur_goal += 1

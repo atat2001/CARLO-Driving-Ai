@@ -4,7 +4,7 @@ from geometry import Point
 # For colors, we use tkinter colors. See http://www.science.smith.edu/dftwiki/index.php/Color_Charts_for_TKinter
 
 class Car(RectangleEntity):
-    def __init__(self, center: Point, heading: float, color: str = 'red'):
+    def __init__(self, center: Point = Point(0, 0), heading: float = 0, color: str = 'red'):
         size = Point(4., 2.)
         movable = True
         friction = 0.06

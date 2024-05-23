@@ -7,6 +7,7 @@ class Social(AutonomousAgent):
     
     def __init__(self, car, path, id = 0):
         super().__init__(car, path)
+        self.car.color = 'yellow'
         self.stop_time = 0
         self.last_decision = -1
         self.stopping = False

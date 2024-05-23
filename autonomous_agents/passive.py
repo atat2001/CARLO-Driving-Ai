@@ -8,6 +8,7 @@ class Passive(AutonomousAgent):
     def __init__(self, car, path, id = 0):
         super().__init__(car, path)
         self.id = id
+        self.car.color = 'blue'
         self.stop_time = 0
         self.last_decision = -3
         self.stopping = False
@@ -41,7 +42,7 @@ class Passive(AutonomousAgent):
         print("making decision")
         if self.current_intersection != None:   
             if self.current_intersection.get_number_of_cars() > 1:
-                print(f"{self.id}: stopping")
+                #print(f"{self.id}: stopping")
                 self.stopping = True    # define que o carro vai ter de parar asap
                 self.decision = False
                 return

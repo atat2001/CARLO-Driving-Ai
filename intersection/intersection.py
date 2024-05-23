@@ -1,17 +1,16 @@
-from abc import ABC, abstractmethod
 
-class Intersection: #(ABC):        
+class Intersection:  
     
     def __init__(self, id, roads, phases):
         self.id     = id
         self.roads  = roads
         self.phases = phases        
 
-        self.road_number_dic = {i + 1: road for i, road in enumerate(roads)} 
-        self.limits       = {}        
+        self.road_number_dic = {i + 1: road for i, road in enumerate(roads)}           
         self.curr_state   = []
         self.cars         = []
-        self.car_to_road = {}
+        self.car_to_road  = {}
+
 
     def __str__(self):
         return f"Intersection {self.id}"
@@ -60,19 +59,6 @@ class Intersection: #(ABC):
         if in_number and out_number:
             return (in_number, out_number)
         return None                    
-    
-
-    def create_limits(self):
-        for number, limits in self.limits_dictionary.items():            
-            point = self.get_road_from_number(number)
-            if point:                
-                new_point = (point[0] + limits[0], point[1] + limits[1])
-                # Update limits
-                self.limits[number] = new_point
-
-
-    def is_inside_limit(self, point):
-        pass
 
     def add_car(self, car, road):
         print("adding car")
@@ -98,4 +84,4 @@ class Intersection: #(ABC):
             if self.get_priority_nr(car) < self.get_priority_nr(autonomous_agent.car):
                 return False
         return True
-    # def update_phase
+    

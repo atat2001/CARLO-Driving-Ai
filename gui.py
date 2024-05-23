@@ -1,18 +1,17 @@
 # Imports
-import numpy as np
 from world import World
 from agents import Car, RectangleBuilding, Painting
 from geometry import Point, Line
-import time
-from shared_variables import roads, dif_via, dt, TIMESTEP
-from autonomous_agents.greedy import Greedy
+from shared_variables import roads, dt, paths
 from autonomous_agents.passive import Passive
+from autonomous_agents.greedy import Greedy
 from autonomous_agents.social import Social
 
 DEBUG_ROAD_LINES = True # used to debug road lines
-TIME = 30   # time in seconds
+TIME = 30               # time in seconds
+N_MAX_CARS = 4
 
-#World
+# World
 world = World(dt, width = 300, height = 200, ppm = 3)
 
 # Sidewalks
@@ -21,7 +20,6 @@ line   = 1.5
 
 
 ''' BLOCKS '''
-
 #1
 world.add(Painting(Point(8, 125.5), Point(17, 127), 'gray80'))
 world.add(RectangleBuilding(Point(8 - line, 125.5 + line), Point(17 - line, 127 - line)))
@@ -74,77 +72,28 @@ world.add(RectangleBuilding(Point(175 + offset + line, 4), Point(70 + offset + l
 world.add(Painting(Point(291, 101), Point(25, 164.5), 'gray80'))
 world.add(RectangleBuilding(Point(291 + line, 100.5), Point(25 - line*1.5, 175.5)))
 
-
-
-''' TESTES'''
-
-# Teste Cars
-c1 = Car(Point(20, 20), np.pi/2, "yellow")
-c2 = Car(Point(25.5, 20), np.pi/2, "blue")
-c3 = Car(Point(6, 53), 0, "green")
-autonomous_list = []
-#c4 = Car(Point(25.5, 22), np.pi/2)
-#autonomous_list.append(Greedy(c4,["0","3","12","14","17", "9"]))
-if False:
-    autonomous_list.append(Passive(c2,["0","3","12","14","17", "9", "2"], 0))
-    autonomous_list.append(Passive(c3,["0","3","12","14","17", "9", "2"], 1))
-else:
-    autonomous_list.append(Greedy(c1,["6","1","8","16"], 0))
-    autonomous_list.append(Passive(c2,["6","1","8","16"], 0))
-    autonomous_list.append(Greedy(c3,["6","1","8","16"], 1))
-    c1.center = Point(c1.center.x,c1.center.y)
-    c2.center = Point(c2.center.x + 2,c2.center.y)
-    c3.center = Point(c3.center.x - 4,c3.center.y)
-
-
+# Show Lines
 for road in roads:
     goal  = roads[road]
     start = goal[0]
     end   = goal[1]
     if DEBUG_ROAD_LINES:
-        world.add(Line(Point(start[0], start[1]), Point(end[0], end[1])))   
-    #world.add(Pedestrian(Point(start[0], start[1]), np.pi))
-    #world.add(Pedestrian(Point(end[0], end[1]), np.pi))
+        world.add(Line(Point(start[0], start[1]), Point(end[0], end[1])))       
 
-world.add(c1)
-world.add(c2)
-world.add(c3)
-#world.add(c4)
 
-c2 = Car(Point(16, 53), 0, "green")
-c3 = Car(Point(251.5-1, 112 + dif_via*3), np.pi, "yellow")  #[251.5, 112 + dif_via*4]
-c4 = Car(Point(104-1, 122.5 + dif_via), np.pi)
-"""
-autonomous_list.append(Passive(c2,["19","11","12"],30))
 
-autonomous_list.append(Passive(c3,["10","20"],1))
+''' TESTES'''
 
-autonomous_list.append(Passive(c4,["8","16"]))
+autonomous_agents = []
 
-world.add(c2)
-world.add(c3)
-world.add(c4)
-"""
+# Testes Passive
+## tantos autonomous agents quanto paths, depois mudar isto
+for path in paths:
+    car = Car()
+    autonomous_agents.append(Passive(car,path))
+
 world.render()
-for aut in autonomous_list:  ## used to update intersections in spawn
-    aut.update_intersection()
-from interactive_controllers import KeyboardController
-controller = KeyboardController(world)
-start_time = time.time()
-while True:
-    #print("tick")
-    if time.time() - start_time > TIME:
-        break
-    #c1.set_control(controller.steering, controller.throttle)
-    for aut in autonomous_list:
-        aut.update()
-    world.tick() 
-    print("tick ")
-    world.render()
-    time.sleep(TIMESTEP) 
-    
-    if world.collision_exists(): 
-        pass
-        #print('Collision exists somewhere...')
+
+world.run(autonomous_agents, N_MAX_CARS)
 
 world.close()

@@ -114,7 +114,7 @@ class AutonomousAgent:
         if self.current_intersection != None:# esta na intercecao
             #print("esta na intercecao")
             if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
-                print("changed intersection")
+                #print("changed intersection")
                 self.remove_intersection_data()
                 self.current_intersection = None
         if self.current_intersection == None:   # nao esta na intercecao
@@ -151,13 +151,13 @@ class AutonomousAgent:
         return self.roads[self.cur_goal // 2]
     
     def get_next_road(self):
-        return self.roads[(self.cur_goal + 2)// 2] #+2 ou +1?
+        return self.roads[(self.cur_goal + 2)// 2] 
 
     def get_next_intersection(self):
         return intersections[road_to_intersection[self.get_current_road()]]
     
     def add_intersection_data(self):                        
-        #Add car and Current State 
+        # Add car and Current State 
         self.current_intersection.add_car(self.car, self.get_current_road())                                        
 
         if self.cur_goal + 1 < len(self.path): #ha paths que acaba no inicio de uma intersection, entao da erro                                               
@@ -270,10 +270,10 @@ class AutonomousAgent:
         return [x, y]
 
     def increment_cur_goal(self):
-        print(f"incrementing-----------------------------------{self.cur_goal-(-1)}")
+        #print(f"incrementing-----------------------------------{self.cur_goal-(-1)}")
         
         if self.cur_goal != len(self.path)-1:
-            print("success")
+            #print("success")
             self.cur_goal += 1
             #if self.cur_goal % 2 == 0:
             #    self.update_intersection()
@@ -333,7 +333,8 @@ class AutonomousAgent:
     def handle_point(self):
         #print("handling thing")
         if self.car.debug:
-            print("handling thing")
+            #print("handling thing")
+            pass
         last_dir = self.get_last_direction()
         prev_goal = self.get_next_goal()
         self.increment_cur_goal()
