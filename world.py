@@ -94,7 +94,8 @@ class World:
 
         for aut in active_agents: 
             self.add(aut.car) 
-            aut.update()        
+            aut.update()
+            aut.update_current_road()        
         start_time = time.time()
 
         while True:            
@@ -124,6 +125,7 @@ class World:
                     active_agents.append(new_agent)                    
                     self.add(new_agent.car)
                     new_agent.update()
+                    new_agent.update_current_road()   
                     next_agent_index += 1                 
         
     

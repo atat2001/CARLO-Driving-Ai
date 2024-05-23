@@ -28,7 +28,7 @@ class AutonomousAgent:
         self.stop = False
         self.decision = False
         self.in_decision = False
-        roads_to_cars[self.get_current_road()] = roads_to_cars.get(self.get_current_road(),[]) + [self.car]
+        #roads_to_cars[self.get_current_road()] = roads_to_cars.get(self.get_current_road(),[]) + [self.car]
 
     def set_decision(self,b):
         if b == True:
