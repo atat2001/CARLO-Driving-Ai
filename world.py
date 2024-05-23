@@ -126,9 +126,9 @@ class World:
             time.sleep(TIMESTEP)
 
             # Remove agents that arrived to final destination or are involved in a collision
-            arrived_agents = [agent for agent in active_agents if not agent.car.movable]
+            arrived_agents   = [agent for agent in active_agents if not agent.car.movable]
             collision_agents = self.collision_exists(autonomous_agents)
-            arrived_count += len(arrived_agents)
+            arrived_count  += len(arrived_agents)
             collided_count += len(collision_agents)
             to_remove = set(arrived_agents + collision_agents)
 
@@ -146,7 +146,8 @@ class World:
                     new_agent.update_current_road()   
                     next_agent_index += 1
                                      
-        print(f"Arrived: {arrived_count}, Collided: {collided_count}")
+        print(f"Arrived: {arrived_count}, Collided: {collided_count}")                
+        
     
     def close(self):
         self.reset()

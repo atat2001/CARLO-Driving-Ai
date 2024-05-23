@@ -7,10 +7,11 @@ from autonomous_agents.passive import Passive
 from autonomous_agents.greedy import Greedy
 from autonomous_agents.social import Social
 from autonomous_agents.phase_agent import PhaseAgent
+import random
 
 DEBUG_ROAD_LINES = True # used to debug road lines
 TIME = 30               # time in seconds
-N_MAX_CARS = 4
+N_MAX_CARS = 10
 
 # World
 world = World(dt, width = 300, height = 200, ppm = 3)
@@ -80,15 +81,16 @@ for road in roads:
     if DEBUG_ROAD_LINES:
         world.add(Line(Point(start[0], start[1]), Point(end[0], end[1])))
 
+
 ''' TESTES'''
 
 autonomous_agents = []
 
 # Testes Passive
-## tantos autonomous agents quanto paths, depois mudar isto
 for path in paths:
-    car = Car()
-    autonomous_agents.append(PhaseAgent(car,path))
+    car = Car()     
+    autonomous_agents.append(Social(car, path, 1))
+    
 
 world.render()
 
