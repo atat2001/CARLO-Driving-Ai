@@ -1,7 +1,7 @@
 from entities import Entity
 from visualizer import Visualizer
 import time
-from shared_variables import intersections, intersection_roads, intersection_phases, TIMESTEP
+from shared_variables import intersections, intersection_roads, intersection_phases, roads_to_cars, TIMESTEP
 from intersection.intersection import Intersection
 
 DEBUG_ROAD_LINES = True # used to debug road lines
@@ -43,7 +43,21 @@ class World:
         for id, roads in intersection_roads.items():
             intersections[id] = Intersection(id, roads, intersection_phases[id])    
     
+    # Deixo estes dois metodos no world?
+    def remove_car(self, car):
+        for road, cars in roads_to_cars.items():
+            if car in cars:
+                cars.remove(car)
+                break
+
+    def remove_car_from_intersections(self, car): #Nome???
+        for intersection in intersections.values():
+            if car in intersection.cars:
+                intersection.remove_car(car)
+
     def delete_dynamic_agent(self, agent):
+        self.remove_car(agent)        
+        self.remove_car_from_intersections(agent)
         self.dynamic_agents.remove(agent)
 
     def find_agent_by_car(self, car, autonomous_agents):
