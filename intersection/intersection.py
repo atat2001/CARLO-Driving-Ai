@@ -51,6 +51,9 @@ class Intersection:
 
     def get_phases(self):
         return self.phases
+    
+    def get_cars(self):
+        return self.cars
 
     def get_relative_position(self, in_road, out_road):                  
         in_number  = self.get_number_from_road(in_road)

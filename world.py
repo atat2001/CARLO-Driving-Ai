@@ -103,7 +103,7 @@ class World:
                         collisions.append((self.dynamic_agents[i], self.static_agents[j]))
         return collisions  
     
-    def run(self, autonomous_agents, n_max_cars): 
+    def run(self, autonomous_agents, n_max_cars, render=True): 
         active_agents = autonomous_agents[:n_max_cars]
         next_agent_index = n_max_cars
         arrived_count = 0
@@ -123,7 +123,8 @@ class World:
             for aut in active_agents:
                 aut.update()
             self.tick() 
-            self.render()
+            if render:
+                self.render()
             time.sleep(TIMESTEP)
 
             # Remove agents that arrived to final destination or are involved in a collision
@@ -136,11 +137,10 @@ class World:
             if to_remove:
                 active_agents = [agent for agent in active_agents if agent not in to_remove]
                 for agent in to_remove:
-                    if(agent.current_intersection):
-                        agent.remove_intersection_data() 
-                    if agent.current_intersection:
-                        agent.remove_intersection_data()
-                    self.delete_dynamic_agent(agent.car)                    
+                    if agent:
+                        if agent.current_intersection:
+                            agent.remove_intersection_data()
+                        self.delete_dynamic_agent(agent.car)                    
 
                 # Add new agents to replace the ones that were removed
                 while len(active_agents) < n_max_cars and next_agent_index < len(autonomous_agents):
@@ -154,8 +154,9 @@ class World:
                     
 
 
-        print(f"Arrived: {arrived_count}, Collided: {collided_count}")                
-        
+        print(f"Arrived: {arrived_count}, Collided: {collided_count}")
+        return arrived_count, collided_count
+    
     def add_agent(self,new_agent,active_agents,next_agent_index):                        
         new_agent.update()
         new_agent.update_current_road()
@@ -174,7 +175,8 @@ class World:
             new_agent.car.center = Point(new_agent.car.center.x+new_vector[0], new_agent.car.center.y+new_vector[1])
 
             diff_to_start_point = [last_car.center.x-first_point[0], last_car.center.y-first_point[1]]
-            
+                                    
+            new_agent.update()
             if(diff_to_start_point[0] > 0 and diff[0] < 0):
                 if(new_agent.current_intersection):
                     new_agent.remove_intersection_data() 
@@ -199,3 +201,5 @@ class World:
     def reset(self):
         self.dynamic_agents = []
         self.t = 0
+        self.last_tick_time = time.time()                        
+        self.initialize_intersections()

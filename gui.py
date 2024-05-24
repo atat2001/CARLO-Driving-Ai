@@ -1,4 +1,7 @@
 # Imports
+import random
+import numpy as np
+from utils import compare_results
 from world import World
 from agents import Car, RectangleBuilding, Painting
 from geometry import Point, Line
@@ -10,9 +13,10 @@ from autonomous_agents.phase_agent import PhaseAgent
 import random
 
 DEBUG_ROAD_LINES = True # used to debug road lines
-N_MAX_CARS = 20
+N_MAX_CARS = 25
 
 # World
+
 world = World(dt, width = 300, height = 200, ppm = 3)
 
 # Sidewalks
@@ -83,17 +87,64 @@ for road in roads:
 
 ''' TESTES'''
 
-autonomous_agents = []
+n_eps = 10
+results = np.zeros(n_eps)
+team_results = {"Greedy": np.zeros(n_eps), "Passive": np.zeros(n_eps), "Social": np.zeros(n_eps), "Phase": np.zeros(n_eps)}
+n_paths = len(paths)
 
-# Testes Passive
-for _ in range(5000):
-    car = Car()     
-    path = random.choice(paths)
-    autonomous_agents.append(PhaseAgent(car, path, 1))
-    
+for ep in range(n_eps):
+    autonomous_agents = []
+    shuffled_paths = paths.copy()
+    np.random.shuffle(shuffled_paths)
+    for i in range(25):
+        autonomous_agents.append(Greedy(Car(), shuffled_paths[i]))
+    arrived, collided = world.run(autonomous_agents, N_MAX_CARS)
+    results[ep] = arrived - collided
 
-world.render()
+team_results["Greedy"] = results
 
-world.run(autonomous_agents, N_MAX_CARS)
+for ep in range(n_eps):
+    autonomous_agents = []
+    shuffled_paths = paths.copy()
+    np.random.shuffle(shuffled_paths)
+    for i in range(25):
+        autonomous_agents.append(Passive(Car(), shuffled_paths[i]))
+    arrived, collided = world.run(autonomous_agents, N_MAX_CARS)
+    results[ep] = arrived - collided
+
+team_results["Passive"] = results
+
+for ep in range(n_eps):
+    autonomous_agents = []
+    shuffled_paths = paths.copy()
+    np.random.shuffle(shuffled_paths)
+    for i in range(25):
+        autonomous_agents.append(Social(Car(), shuffled_paths[i]))
+    arrived, collided = world.run(autonomous_agents, N_MAX_CARS)
+    results[ep] = arrived - collided
+
+team_results["Social"] = results
+
+for ep in range(n_eps):
+    autonomous_agents = []
+    shuffled_paths = paths.copy()
+    np.random.shuffle(shuffled_paths)
+    for i in range(25):
+        autonomous_agents.append(PhaseAgent(Car(), shuffled_paths[i]))
+    arrived, collided = world.run(autonomous_agents, N_MAX_CARS)
+    results[ep] = arrived - collided
+
+team_results["Phase"] = results
+
+for ep in range(n_eps):
+    autonomous_agents = []
+    shuffled_paths = paths.copy()
+    np.random.shuffle(shuffled_paths)
+    for i in range(25):
+        autonomous_agents.append(Passive(Car(), shuffled_paths[i]))
+    arrived, collided = world.run(autonomous_agents, N_MAX_CARS)
+    results[ep] = arrived - collided
 
 world.close()
+
+compare_results(team_results, colors=["orange", "green", "blue", "gray"])

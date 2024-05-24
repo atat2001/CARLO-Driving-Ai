@@ -58,7 +58,7 @@ class Passive(AutonomousAgent):
         else:
             self.car.velocity = Point(0,0)
             self.stop_time = time.time()
-            self.rng = 1 + random.randint(1, 20)/100
+            self.rng = 0.5 + random.randint(0, 10)/5
             self.stopping = False
     
 

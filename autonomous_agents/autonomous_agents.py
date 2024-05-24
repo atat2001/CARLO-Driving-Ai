@@ -25,6 +25,7 @@ class AutonomousAgent:
         self.old_heading = None
         self.waiting_for_turn = [False, False]
         self.current_intersection = None
+        self.last_relative_pos = None
         self.stop = False
         self.decision = False
         self.in_decision = False
@@ -41,6 +42,10 @@ class AutonomousAgent:
         if b == True:
             self.car.passed_objective = True
         self.decision = b
+        self.car.set_decision(b)
+    
+    def get_decision(self):
+        return self.decision
 
     def update_current_road(self):
         ## do once cur_objective % 2 == 0
@@ -146,7 +151,6 @@ class AutonomousAgent:
             #print("esta na intercecao")
             if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
                 #print("changed intersection")
-                self.car.color = "green"
                 self.remove_intersection_data()                
                 self.current_intersection = None
         if self.current_intersection == None:   # nao esta na intercecao
@@ -156,9 +160,9 @@ class AutonomousAgent:
                 dist = self.get_distance()
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
                 if dist < INTERSECTION_DISTANCE:
-                    print("added to intersection")    
-                    self.car.color = "red"                
-                    self.current_intersection = self.get_next_intersection() 
+                    print("added to intersection")          
+                    self.current_intersection = self.get_next_intersection()
+                    self.set_last_relative_pos(self.current_intersection.get_relative_position(self.get_current_road(), self.get_next_road()))
                     self.add_intersection_data() 
         #   print("}")
 
@@ -180,6 +184,13 @@ class AutonomousAgent:
                 return True
                 
         return False
+    
+    def get_last_relative_pos(self):
+        return self.last_relative_pos
+    
+    def set_last_relative_pos(self, last_relative_pos):
+        self.last_relative_pos = last_relative_pos
+        self.car.set_last_relative_pos(last_relative_pos)
 
     def get_current_road(self):
         return self.roads[self.cur_goal // 2]

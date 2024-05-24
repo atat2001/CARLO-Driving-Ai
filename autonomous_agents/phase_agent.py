@@ -19,11 +19,25 @@ class PhaseAgent(AutonomousAgent):
         relative_pos_to_int = self.current_intersection.get_relative_position(
             self.get_current_road(), self.get_next_road()
         )
+        print('myposition', relative_pos_to_int)
         curr_phase = self.calculate_curr_phase()
 
-        if curr_phase == None:
+        if curr_phase == None or isinstance(curr_phase, int):
             return True
 
+        # for car in self.current_intersection.get_cars():
+        #     if car != self.car:
+        #         car_pos = car.get_last_relative_pos()
+        #         if (
+        #             car.get_decision()
+        #             and car_pos
+        #             and car_pos not in curr_phase
+        #             and car_pos == self.voted_start_positions[car_pos[0]]
+        #         ):
+        #             print(car.get_decision(), car.get_last_relative_pos())
+        #             return False
+
+        # print('curr_phase', curr_phase)
         if relative_pos_to_int and relative_pos_to_int in curr_phase:
             return True
         return False
@@ -36,10 +50,13 @@ class PhaseAgent(AutonomousAgent):
             return None  # not an intersection
 
         phase_voting = {}
+        self.voted_start_positions = dict()
 
         for index, phase in phases.items():
             for busy_point in state:
-                if busy_point in phase:
+                if busy_point[0] not in self.voted_start_positions.keys():
+                    self.voted_start_positions[busy_point[0]] = busy_point
+                if self.voted_start_positions[busy_point[0]] in phase:
                     if index in phase_voting.keys():
                         phase_voting[index] += 1
                     else:
@@ -49,6 +66,8 @@ class PhaseAgent(AutonomousAgent):
             return 1  # default phase if no cars in intersection
 
         chosen_phase = max(phase_voting, key=phase_voting.get)
+        print(self.current_intersection, "chosen_phase", phases[chosen_phase])
+        print("state", state)
 
         return phases[chosen_phase]
 
@@ -61,10 +80,9 @@ class PhaseAgent(AutonomousAgent):
         if self.current_intersection != None:
             if not self.is_agent_in_curr_phase():
                 self.stopping = True
-                self.decision = False
+                self.set_decision(False)
             else:
                 self.set_decision(True)
-                #self.decision = True
 
     def apply_decision(self):
         if self.decision:  ## se a decisao for positiva vai
@@ -79,9 +97,9 @@ class PhaseAgent(AutonomousAgent):
                 b = True
                 self.cur_goal -= 1
             if self.is_agent_in_curr_phase():
-                self.decision = True
-                #self.in_decision = False
-                #self.update_intersection()
+                self.set_decision(True)
+                # self.in_decision = False
+                # self.update_intersection()
                 self.accelerate()
             else:
                 self.accelerate_0()

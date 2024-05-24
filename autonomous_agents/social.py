@@ -46,7 +46,7 @@ class Social(AutonomousAgent):
             if not(self.current_intersection.has_priority(self)):
                 print(f"{self.id}: stopping")
                 self.stopping = True    # define que o carro vai ter de parar asap
-                self.decision = False
+                self.set_decision(False)
                 return
             else:
                 print(f"{self.id}: going")

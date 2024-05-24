@@ -1,7 +1,7 @@
 from autonomous_agents.autonomous_agents import AutonomousAgent
 
 class Greedy(AutonomousAgent):
-    def __init__(self, car, path, id):
+    def __init__(self, car, path, id=0):
         self.id = id
         super().__init__(car, path)
         self.color = "red"
@@ -39,7 +39,7 @@ class Greedy(AutonomousAgent):
         self.get_best_movement()
         if self.cur_goal % 2 == 1:
             self.update_intersection()
-        self.stop_for_car_in_front()
+        # self.stop_for_car_in_front()
         print(self.throttle)
         self.car.set_control(self.steering, self.throttle)
 
