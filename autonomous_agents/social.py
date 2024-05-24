@@ -38,7 +38,8 @@ class Social(AutonomousAgent):
     def make_decision(self):
         if self.cur_goal % 2 == 0 or self.cur_goal < self.last_decision+2:  ## only do decision once, on first point
             return
-
+        if self.get_car_in_front() != None:
+            return
         self.last_decision = self.cur_goal
         print("making decision")
         if self.current_intersection != None:
@@ -70,8 +71,8 @@ class Social(AutonomousAgent):
             if self.try_to_go():
                 self.set_decision(True)
                 #self.decision = True
-                self.in_decision = False
-                self.update_intersection() # due to a bug keep this here
+                #self.in_decision = False
+                #self.update_intersection() # due to a bug keep this here
                 self.accelerate()
             else:
                 self.accelerate_0()
@@ -82,6 +83,7 @@ class Social(AutonomousAgent):
         if self.cur_goal % 2 == 1: 
             self.update_intersection()
         if(self.in_decision or self.is_decision_time()):
+            
             self.in_decision = True
             self.accelerate_0()       ## steering
             self.make_decision()

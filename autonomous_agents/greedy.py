@@ -25,7 +25,9 @@ class Greedy(AutonomousAgent):
             self.accelerate()
 
     def update(self):
-        self.decision = True
+
+        self.set_decision(True)
+        #self.decision = True
         #print(self.get_next_intersection())
         #print(self.get_current_road())
         if self.car.debug:

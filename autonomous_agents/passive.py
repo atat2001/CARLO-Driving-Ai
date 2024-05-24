@@ -72,7 +72,7 @@ class Passive(AutonomousAgent):
             if self.try_to_go():    ## phases
                 #self.decision = True
                 self.set_decision(True)
-                self.in_decision = False
+                #self.in_decision = False
                 self.update_intersection() # due to a bug keep this here
                 self.accelerate()
             else:

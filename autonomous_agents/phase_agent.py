@@ -63,7 +63,8 @@ class PhaseAgent(AutonomousAgent):
                 self.stopping = True
                 self.decision = False
             else:
-                self.decision = True
+                self.set_decision(True)
+                #self.decision = True
 
     def apply_decision(self):
         if self.decision:  ## se a decisao for positiva vai
@@ -79,8 +80,8 @@ class PhaseAgent(AutonomousAgent):
                 self.cur_goal -= 1
             if self.is_agent_in_curr_phase():
                 self.decision = True
-                self.in_decision = False
-                self.update_intersection()
+                #self.in_decision = False
+                #self.update_intersection()
                 self.accelerate()
             else:
                 self.accelerate_0()

@@ -1,6 +1,6 @@
 import numpy as np
 from geometry import Point  
-from shared_variables import dif_via, SIDE_TURN, roads, road_to_intersection, intersections, INTERSECTION_DISTANCE, THROTTLE, TIMESTEP,roads_to_cars
+from shared_variables import dif_via, SIDE_TURN, roads, road_to_intersection, intersections, INTERSECTION_DISTANCE, THROTTLE, TIMESTEP,roads_to_cars, paths
 from enum import Enum
 import time
 import math
@@ -29,6 +29,13 @@ class AutonomousAgent:
         self.decision = False
         self.in_decision = False
         #roads_to_cars[self.get_current_road()] = roads_to_cars.get(self.get_current_road(),[]) + [self.car]
+
+    def pick_new_path(self):
+        path = paths[random.randint(0,len(paths)-1)] ## pick a random path
+        self.roads = path
+        self.car = car
+        self.init_car()
+        self.path = [[car.center.x, car.center.y]] + self.create_path(path)
 
     def set_decision(self,b):
         if b == True:
@@ -76,6 +83,28 @@ class AutonomousAgent:
         print("returning car\n")
         return smallest_bigger_car
 
+    def get_last_car(self):
+        if self.car.movable == False:
+            return None
+        cars = self.get_cars_in_road()
+        if len(cars) == 0:
+            return None
+        last_point = self.get_next_goal()
+        cur_point = self.get_position()
+        diff = [last_point[0] - cur_point[0], last_point[1] - cur_point[1]]
+        diff_norm = diff[0]*diff[0]+diff[1]+diff[1]
+        smallest_bigger_car = None
+        smallest_bigger_car_diff_norm = None
+        for car in self.get_cars_in_road():
+            if car.movable == False:
+                continue
+            car_diff = [last_point[0] - car.center.x, last_point[1] - car.center.y]
+            car_diff_norm = car_diff[0]*car_diff[0]+car_diff[1]+car_diff[1]
+            if smallest_bigger_car_diff_norm == None or car_diff_norm > smallest_bigger_car_diff_norm:
+                smallest_bigger_car_diff_norm = car_diff_norm
+                smallest_bigger_car = car
+        return smallest_bigger_car
+
     def stop_for_car_in_front(self):
         aux = self.get_car_in_front()
         if aux != None:
@@ -117,6 +146,7 @@ class AutonomousAgent:
             #print("esta na intercecao")
             if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
                 #print("changed intersection")
+                self.car.color = "green"
                 self.remove_intersection_data()                
                 self.current_intersection = None
         if self.current_intersection == None:   # nao esta na intercecao
@@ -126,7 +156,8 @@ class AutonomousAgent:
                 dist = self.get_distance()
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
                 if dist < INTERSECTION_DISTANCE:
-                    print("added to intersection")                    
+                    print("added to intersection")    
+                    self.car.color = "red"                
                     self.current_intersection = self.get_next_intersection() 
                     self.add_intersection_data() 
         #   print("}")

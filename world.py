@@ -3,6 +3,7 @@ from visualizer import Visualizer
 import time
 from shared_variables import intersections, intersection_roads, intersection_phases, roads_to_cars, TIMESTEP
 from intersection.intersection import Intersection
+from geometry import Point
 
 DEBUG_ROAD_LINES = True # used to debug road lines
 TIME = 30               # time in seconds
@@ -137,20 +138,58 @@ class World:
                 for agent in to_remove:
                     if(agent.current_intersection):
                         agent.remove_intersection_data() 
+                    if agent.current_intersection:
+                        agent.remove_intersection_data()
                     self.delete_dynamic_agent(agent.car)                    
 
                 # Add new agents to replace the ones that were removed
                 while len(active_agents) < n_max_cars and next_agent_index < len(autonomous_agents):
                     new_agent = autonomous_agents[next_agent_index]
+                    while not(self.add_agent(new_agent,active_agents, next_agent_index)):                
+                        new_agent.pick_new_path()
+                    
                     active_agents.append(new_agent)                    
                     self.add(new_agent.car)
-                    new_agent.update()
-                    new_agent.update_current_road()   
-                    next_agent_index += 1
-                                     
+                    next_agent_index += 1 
+                    
+
+
         print(f"Arrived: {arrived_count}, Collided: {collided_count}")                
         
-    
+    def add_agent(self,new_agent,active_agents,next_agent_index):                        
+        new_agent.update()
+        new_agent.update_current_road()
+
+        last_car = new_agent.get_last_car()
+        last_car = None
+        if last_car != None:
+            last_car = last_car
+            first_point = new_agent.path[new_agent.cur_goal-1]
+            last_point = new_agent.get_next_goal()
+
+            diff = [new_agent.car.center.x-last_point[0], new_agent.car.center.y - last_point[1]]
+            diff_norm = (diff[0]**2 + diff[1]**2)**0.5
+            new_vector = [diff[0]*3/diff_norm, diff[1]*3/diff_norm]
+
+            new_agent.car.center = Point(new_agent.car.center.x+new_vector[0], new_agent.car.center.y+new_vector[1])
+
+            diff_to_start_point = [last_car.center.x-first_point[0], last_car.center.y-first_point[1]]
+            
+            if(diff_to_start_point[0] > 0 and diff[0] < 0):
+                if(new_agent.current_intersection):
+                    new_agent.remove_intersection_data() 
+                if new_agent.current_intersection:
+                    new_agent.remove_intersection_data()
+                return False
+            if diff_to_start_point[1] > 0 and diff[1] < 0:
+                if(new_agent.current_intersection):
+                    new_agent.remove_intersection_data() 
+                if new_agent.current_intersection:
+                    new_agent.remove_intersection_data()
+                return False
+            return True
+        return True
+
     def close(self):
         self.reset()
         self.static_agents = []
