@@ -88,7 +88,7 @@ class AutonomousAgent:
             ## estamos a assumir que estao em linha reta, ou seja um vai estar a 0
             print(f"distance is: {dist}")
             print(f"from: {self.car.color} to: {aux.color}")
-            min_distance = self.get_brake_distance() + 5
+            min_distance = self.get_brake_distance() + 10
             print(f"min_dist is {min_distance}\n\n")
             #if self.car.color == "yellow":
                 #exit()
@@ -116,6 +116,7 @@ class AutonomousAgent:
             if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
                 #print("changed intersection")
                 self.remove_intersection_data()
+                self.car.color = "green"
                 self.current_intersection = None
         if self.current_intersection == None:   # nao esta na intercecao
             #print("nao esta na intercecao")
@@ -125,6 +126,7 @@ class AutonomousAgent:
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
                 if dist < INTERSECTION_DISTANCE:
                     print("added to intersection")
+                    self.car.color = "yellow"
                     self.current_intersection = self.get_next_intersection() 
                     self.add_intersection_data() 
         #   print("}")

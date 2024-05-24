@@ -11,7 +11,7 @@ import random
 
 DEBUG_ROAD_LINES = True # used to debug road lines
 TIME = 30               # time in seconds
-N_MAX_CARS = 10
+N_MAX_CARS = 30
 
 # World
 world = World(dt, width = 300, height = 200, ppm = 3)
@@ -87,9 +87,10 @@ for road in roads:
 autonomous_agents = []
 
 # Testes Passive
-for path in paths:
+for _ in range(50):
     car = Car()     
-    autonomous_agents.append(Social(car, path, 1))
+    path = random.choice(paths)
+    autonomous_agents.append(PhaseAgent(car, path, 1))
     
 
 world.render()
