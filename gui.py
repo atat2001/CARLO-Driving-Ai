@@ -10,7 +10,6 @@ from autonomous_agents.phase_agent import PhaseAgent
 import random
 
 DEBUG_ROAD_LINES = True # used to debug road lines
-TIME = 30               # time in seconds
 N_MAX_CARS = 30
 
 # World
@@ -88,7 +87,7 @@ autonomous_agents = []
 
 # Testes Passive
 for _ in range(50):
-    car = Car()     
+    car = Car()
     path = random.choice(paths)
     autonomous_agents.append(PhaseAgent(car, path, 1))
     

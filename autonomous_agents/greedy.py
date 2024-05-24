@@ -4,7 +4,8 @@ class Greedy(AutonomousAgent):
     def __init__(self, car, path, id):
         self.id = id
         super().__init__(car, path)
-        self.car.color = 'red'
+        self.color = "red"
+        self.car.color = self.color
 
     ##### greedy things
     def get_best_movement(self):

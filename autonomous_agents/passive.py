@@ -8,7 +8,8 @@ class Passive(AutonomousAgent):
     def __init__(self, car, path, id = 0):
         super().__init__(car, path)
         self.id = id
-        self.car.color = 'blue'
+        self.color = 'blue'
+        self.car.color = self.color
         self.stop_time = 0
         self.last_decision = -3
         self.stopping = False

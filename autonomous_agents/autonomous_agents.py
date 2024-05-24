@@ -117,8 +117,7 @@ class AutonomousAgent:
             #print("esta na intercecao")
             if self.get_next_intersection() != self.current_intersection and not self.in_decision: # verifica se ja acabou a intercecao e se ja acabou a decisao
                 #print("changed intersection")
-                self.remove_intersection_data()
-                self.car.color = "green"
+                self.remove_intersection_data()                
                 self.current_intersection = None
         if self.current_intersection == None:   # nao esta na intercecao
             #print("nao esta na intercecao")
@@ -127,8 +126,7 @@ class AutonomousAgent:
                 dist = self.get_distance()
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
                 if dist < INTERSECTION_DISTANCE:
-                    print("added to intersection")
-                    self.car.color = "yellow"
+                    print("added to intersection")                    
                     self.current_intersection = self.get_next_intersection() 
                     self.add_intersection_data() 
         #   print("}")
@@ -140,15 +138,16 @@ class AutonomousAgent:
         
             
     def is_decision_time(self):
-        if self.cur_goal % 2 == 0:
+        if self.cur_goal % 2 == 0:            
             return False
         if self.current_intersection != None: ## 
             dist = self.get_distance()
             dist_to_intersection = math.sqrt(dist[0]*dist[0] + dist[1]*dist[1])
 
             if self.get_brake_distance() >= dist_to_intersection:  ## MAKE DECISION
-                print("is_decision_time " + str(self.id))
+                print("is_decision_time " + str(self.id))                
                 return True
+                
         return False
 
     def get_current_road(self):
@@ -173,7 +172,7 @@ class AutonomousAgent:
             self.curr_state = (curr_road, next_road) 
             self.current_intersection.add_state(curr_road, next_road) 
     
-    def remove_intersection_data(self):
+    def remove_intersection_data(self):        
         self.current_intersection.remove_car(self.car)                                
         self.current_intersection.remove_state(self.curr_state[0], self.curr_state[1]) #eliminar acao feita                
         self.current_intersection = None

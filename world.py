@@ -55,9 +55,9 @@ class World:
             if car in intersection.cars:
                 intersection.remove_car(car)
 
-    def delete_dynamic_agent(self, agent):
-        self.remove_car(agent)        
-        self.remove_car_from_intersections(agent)
+    def delete_dynamic_agent(self, agent):    
+        self.remove_car(agent)    
+        self.remove_car_from_intersections(agent)        
         self.dynamic_agents.remove(agent)
 
     def find_agent_by_car(self, car, autonomous_agents):
@@ -135,7 +135,9 @@ class World:
             if to_remove:
                 active_agents = [agent for agent in active_agents if agent not in to_remove]
                 for agent in to_remove:
-                    self.delete_dynamic_agent(agent.car)
+                    if(agent.current_intersection):
+                        agent.remove_intersection_data() 
+                    self.delete_dynamic_agent(agent.car)                    
 
                 # Add new agents to replace the ones that were removed
                 while len(active_agents) < n_max_cars and next_agent_index < len(autonomous_agents):

@@ -6,7 +6,8 @@ class PhaseAgent(AutonomousAgent):
     def __init__(self, car, path, id=0):
         super().__init__(car, path)
         self.id = id
-        self.car.color = "green"
+        self.color = "green"
+        self.car.color = self.color
         self.last_decision = -1
         self.stopping = False
 
