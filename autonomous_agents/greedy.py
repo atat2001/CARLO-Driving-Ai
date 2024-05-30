@@ -41,6 +41,7 @@ class Greedy(AutonomousAgent):
             self.update_intersection()
         # self.stop_for_car_in_front()
         print(self.throttle)
+        
         self.car.set_control(self.steering, self.throttle)
 
 

@@ -39,6 +39,7 @@ class Social(AutonomousAgent):
         if self.cur_goal % 2 == 0 or self.cur_goal < self.last_decision+2:  ## only do decision once, on first point
             return
         if self.get_car_in_front() != None:
+            self.set_decision(False)
             return
         self.last_decision = self.cur_goal
         print("making decision")
@@ -51,6 +52,11 @@ class Social(AutonomousAgent):
             else:
                 print(f"{self.id}: going")
                 self.set_decision(True)
+                for car in self.current_intersection.cars:
+                    if car.decision == True and car != self.car and self.current_intersection.get_priority_nr(self.car) != self.current_intersection.get_priority_nr(car):
+                        self.set_decision(False)
+                        self.stopping = True
+                        return
                 #self.decision = True
 
     def stop_car(self):
@@ -77,6 +83,13 @@ class Social(AutonomousAgent):
             else:
                 self.accelerate_0()
 
+    def break_for_cars_inside(self):
+        if self.current_intersection != None:
+            if self.decision == True and self.current_intersection.has_priority(self):
+                for car in self.current_intersection.cars:
+                    if car.decision == True and car != self.car and self.current_intersection.get_priority_nr(self.car) != self.current_intersection.get_priority_nr(car):
+                        self.stop_car()
+
     def update(self):
         self.get_best_movement()  ## used to update point, intersection and steering
         
@@ -88,6 +101,8 @@ class Social(AutonomousAgent):
             self.accelerate_0()       ## steering
             self.make_decision()
             self.apply_decision()
+            #self.break_for_cars_inside()
+
             #self.update_intersection()  ## nao sei, se mudo a ordem da um bug, ao contrario da outro...
         self.stop_for_car_in_front()
         self.car.set_control(self.steering, self.throttle)

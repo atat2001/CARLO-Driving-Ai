@@ -87,7 +87,7 @@ for road in roads:
 
 ''' TESTES'''
 
-n_eps = 10
+n_eps = 1
 results = np.zeros(n_eps)
 team_results = {"Greedy": np.zeros(n_eps), "Passive": np.zeros(n_eps), "Social": np.zeros(n_eps), "Phase": np.zeros(n_eps)}
 n_paths = len(paths)
@@ -95,12 +95,12 @@ n_paths = len(paths)
 for ep in range(n_eps):
     autonomous_agents = []
     shuffled_paths = paths.copy()
-    np.random.shuffle(shuffled_paths)
+    #np.random.shuffle(shuffled_paths)
     for i in range(25):
-        autonomous_agents.append(Greedy(Car(), shuffled_paths[i]))
+        autonomous_agents.append(Social(Car(), shuffled_paths[i]))
     arrived, collided = world.run(autonomous_agents, N_MAX_CARS)
     results[ep] = arrived - collided
-
+exit()
 team_results["Greedy"] = results
 
 for ep in range(n_eps):
