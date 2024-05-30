@@ -83,12 +83,6 @@ class Social(AutonomousAgent):
             else:
                 self.accelerate_0()
 
-    def break_for_cars_inside(self):
-        if self.current_intersection != None:
-            if self.decision == True and self.current_intersection.has_priority(self):
-                for car in self.current_intersection.cars:
-                    if car.decision == True and car != self.car and self.current_intersection.get_priority_nr(self.car) != self.current_intersection.get_priority_nr(car):
-                        self.stop_car()
 
     def update(self):
         self.get_best_movement()  ## used to update point, intersection and steering
@@ -101,7 +95,6 @@ class Social(AutonomousAgent):
             self.accelerate_0()       ## steering
             self.make_decision()
             self.apply_decision()
-            #self.break_for_cars_inside()
 
             #self.update_intersection()  ## nao sei, se mudo a ordem da um bug, ao contrario da outro...
         self.stop_for_car_in_front()
