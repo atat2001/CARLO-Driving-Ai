@@ -40,7 +40,6 @@ class Passive(AutonomousAgent):
             return
         
         self.last_decision = self.cur_goal
-        print("making decision")
         if self.current_intersection != None:   
             if self.current_intersection.get_number_of_cars() > 1:
                 #print(f"{self.id}: stopping")
@@ -48,7 +47,6 @@ class Passive(AutonomousAgent):
                 self.decision = False
                 return
             else:
-                print(f"{self.id}: going")
                 self.set_decision(True)
                 #self.decision = True
 
@@ -66,7 +64,6 @@ class Passive(AutonomousAgent):
         if self.decision:  ## se a decisao for positiva vai
             self.accelerate()
         elif self.stopping:   ## se a decisao for negativa e estiver a parar continua a parar
-            print("stopping " + str(self.id))
             self.stop_car()
         else: # se a decisao for negativa mas nao tiver mais a parar compara os timers:
             if self.try_to_go():    ## phases

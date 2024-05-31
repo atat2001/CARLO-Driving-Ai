@@ -40,7 +40,6 @@ class KeyboardController:
         self._steering = np.clip(val, self.min_steering, self.max_steering)
     @throttle.setter
     def throttle(self, val):
-        print(self._throttle)
         self._throttle = np.clip(val, self.min_throttle, self.max_throttle)
     
     def arrow_up_release(self, event):

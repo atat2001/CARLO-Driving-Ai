@@ -19,7 +19,6 @@ class PhaseAgent(AutonomousAgent):
         relative_pos_to_int = self.current_intersection.get_relative_position(
             self.get_current_road(), self.get_next_road()
         )
-        print('myposition', relative_pos_to_int)
         curr_phase = self.calculate_curr_phase()
 
         if curr_phase == None or isinstance(curr_phase, int):
@@ -39,6 +38,8 @@ class PhaseAgent(AutonomousAgent):
 
         # print('curr_phase', curr_phase)
         if relative_pos_to_int and relative_pos_to_int in curr_phase:
+            self.car.cur_phase = curr_phase
+
             return True
         return False
 
@@ -66,8 +67,6 @@ class PhaseAgent(AutonomousAgent):
             return 1  # default phase if no cars in intersection
 
         chosen_phase = max(phase_voting, key=phase_voting.get)
-        print(self.current_intersection, "chosen_phase", phases[chosen_phase])
-        print("state", state)
 
         return phases[chosen_phase]
 
@@ -76,12 +75,19 @@ class PhaseAgent(AutonomousAgent):
             return
 
         self.last_decision = self.cur_goal
-
+        if self.get_car_in_front() != None:
+            self.set_decision(False)
+            return
         if self.current_intersection != None:
             if not self.is_agent_in_curr_phase():
                 self.stopping = True
                 self.set_decision(False)
             else:
+                for car in self.current_intersection.cars:
+                    if car.decision == True and car != self.car and car.cur_phase != self.car.cur_phase:
+                        self.set_decision(False)
+                        self.stopping = True
+                        return
                 self.set_decision(True)
 
     def apply_decision(self):
@@ -97,16 +103,23 @@ class PhaseAgent(AutonomousAgent):
                 b = True
                 self.cur_goal -= 1
             if self.is_agent_in_curr_phase():
+                
                 self.set_decision(True)
+                for car in self.current_intersection.cars:
+                    if car.decision == True and car != self.car and car.cur_phase != self.car.cur_phase:
+                        self.set_decision(False)
+                        self.stopping = True
                 # self.in_decision = False
                 # self.update_intersection()
-                self.accelerate()
+                if self.decision:
+                    self.accelerate()
             else:
                 self.accelerate_0()
             if b:
                 self.cur_goal += 1
 
     def update(self):
+        self.car.car_in_front = (self.get_car_in_front() == None)
         self.get_best_movement()  ## used to update point, intersection and steering
         if self.cur_goal % 2 == 1:
             self.update_intersection()

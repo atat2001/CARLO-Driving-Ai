@@ -64,12 +64,10 @@ class Intersection:
         return None                    
 
     def add_car(self, car, road):
-        print("adding car")
         self.cars.append(car)
         self.car_to_road[car] = road    
     
     def remove_car(self, car):
-        print("removing car")
         self.cars.remove(car)
         del self.car_to_road[car]
 

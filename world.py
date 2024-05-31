@@ -73,7 +73,7 @@ class World:
                 for j in range(i+1, len(self.dynamic_agents)):
                     if self.dynamic_agents[i].collidable and self.dynamic_agents[j].collidable:
                         if self.dynamic_agents[i].collidesWith(self.dynamic_agents[j]):  
-                            print(self.dynamic_agents[j])
+                            #print(self.dynamic_agents[j])
                             agent1 = self.find_agent_by_car(self.dynamic_agents[i], agents)
                             agent2 = self.find_agent_by_car(self.dynamic_agents[j], agents)                                                      
                             return [agent1, agent2]
@@ -107,7 +107,7 @@ class World:
         active_agents = autonomous_agents[:n_max_cars]
         next_agent_index = n_max_cars
         arrived_count = 0
-        collided_count = 0
+        collided_count = 0        
 
         for aut in active_agents: 
             self.add(aut.car) 
@@ -117,8 +117,10 @@ class World:
 
         while True:            
             if time.time() - start_time > TIME:
+                self.reset()
                 break
             if not active_agents:
+                self.reset()
                 break            
             for aut in active_agents:
                 aut.update()
@@ -154,7 +156,7 @@ class World:
                     
 
 
-        print(f"Arrived: {arrived_count}, Collided: {collided_count}")
+        #print(f"Arrived: {arrived_count}, Collided: {collided_count}")
         return arrived_count, collided_count
     
     def add_agent(self,new_agent,active_agents,next_agent_index):                        
@@ -198,8 +200,9 @@ class World:
         if self.visualizer.window_created:
             self.visualizer.close()
         
-    def reset(self):
-        self.dynamic_agents = []
+    def reset(self):                
+        for agent in self.dynamic_agents.copy():
+            self.delete_dynamic_agent(agent)                            
         self.t = 0
         self.last_tick_time = time.time()                        
         self.initialize_intersections()

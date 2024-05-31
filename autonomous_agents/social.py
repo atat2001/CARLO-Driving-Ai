@@ -42,22 +42,19 @@ class Social(AutonomousAgent):
             self.set_decision(False)
             return
         self.last_decision = self.cur_goal
-        print("making decision")
         if self.current_intersection != None:
             if not(self.current_intersection.has_priority(self)):
-                print(f"{self.id}: stopping")
                 self.stopping = True    # define que o carro vai ter de parar asap
                 self.set_decision(False)
                 return
             else:
-                print(f"{self.id}: going")
                 self.set_decision(True)
                 for car in self.current_intersection.cars:
                     if car.decision == True and car != self.car and self.current_intersection.get_priority_nr(self.car) != self.current_intersection.get_priority_nr(car):
                         self.set_decision(False)
                         self.stopping = True
                         return
-                #self.decision = True
+                self.car.color = "yellow"
 
     def stop_car(self):
         if(self.car.speed > 0):
@@ -69,17 +66,25 @@ class Social(AutonomousAgent):
             self.stopping = False
     
     def apply_decision(self):
+        
         if self.decision:  ## se a decisao for positiva vai
             self.accelerate()
         elif self.stopping:   ## se a decisao for negativa e estiver a parar continua a parar
             self.stop_car()
         else: # se a decisao for negativa mas nao tiver mais a parar compara os timers:
             if self.try_to_go():
+                if self.get_car_in_front() != None:
+                    self.set_decision(False)
+                    return
                 self.set_decision(True)
-                #self.decision = True
-                #self.in_decision = False
-                #self.update_intersection() # due to a bug keep this here
-                self.accelerate()
+                for car in self.current_intersection.cars:
+                    if car.decision == True and car != self.car and self.current_intersection.get_priority_nr(self.car) != self.current_intersection.get_priority_nr(car):
+                        self.set_decision(False)
+                        self.stopping = True
+                        return
+                self.car.color = "yellow"
+                if self.decision:
+                    self.accelerate()
             else:
                 self.accelerate_0()
 

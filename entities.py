@@ -13,6 +13,8 @@ class Entity:
         self.collidable = True
         self.debug = False
         self.passed_objective = False
+        self.cur_phase = None
+        self.car_in_front = False
         if movable:
             self.friction = friction
             self.velocity = Point(0,0) # this is xp, yp
@@ -105,12 +107,6 @@ class Entity:
                         self.going_forward = True
                     else:
                         self.going_forward = False
-            """if (new_speed < 0 and self.inputAcceleration != 0) or speed < 0:   ## isto tem um bug, marcha a tras nao esta a funcionar bem
-                self.going_forward = False
-                print("1")
-            elif new_speed > 0:
-                self.going_forward = True
-                print("2")"""
 
             if not(self.going_forward):  # if going backward it is heading in the opposite direction
                 heading = np.mod(heading+np.pi, 2*np.pi)

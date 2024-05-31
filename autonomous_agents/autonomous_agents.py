@@ -85,7 +85,6 @@ class AutonomousAgent:
                 smallest_bigger_car = car
         if smallest_bigger_car == None:
             return None
-        print("returning car\n")
         return smallest_bigger_car
 
     def get_last_car(self):
@@ -119,15 +118,10 @@ class AutonomousAgent:
                 dist = abs(last_point[0] - cur_point[0] + last_point[1] - cur_point[1])
             else:
                 dist = abs(self.car.center.x - aux.center.x + self.car.center.y - aux.center.y)
-            ## estamos a assumir que estao em linha reta, ou seja um vai estar a 0
-            print(f"distance is: {dist}")
-            print(f"from: {self.car.color} to: {aux.color}")
-            min_distance = self.get_brake_distance() + 10
-            print(f"min_dist is {min_distance}\n\n")
+            min_distance = self.get_brake_distance() + 8
             #if self.car.color == "yellow":
                 #exit()
             if(dist < min_distance):
-                print("breaking \n\n")
                 self.deaccelerate()
             if self.car.speed < 0.3 and dist < min_distance + 5:
                 self.car.velocity = Point(0,0)
@@ -159,8 +153,7 @@ class AutonomousAgent:
             if self.get_next_goal() == roads[road_id][1]:  # se o proximo goal for o inicio de uma intersection
                 dist = self.get_distance()
                 dist = dist[0]*dist[0] + dist[1]*dist[1]
-                if dist < INTERSECTION_DISTANCE:
-                    print("added to intersection")          
+                if dist < INTERSECTION_DISTANCE:        
                     self.current_intersection = self.get_next_intersection()
                     self.set_last_relative_pos(self.current_intersection.get_relative_position(self.get_current_road(), self.get_next_road()))
                     self.add_intersection_data() 
@@ -179,8 +172,7 @@ class AutonomousAgent:
             dist = self.get_distance()
             dist_to_intersection = math.sqrt(dist[0]*dist[0] + dist[1]*dist[1])
 
-            if self.get_brake_distance() >= dist_to_intersection:  ## MAKE DECISION
-                print("is_decision_time " + str(self.id))                
+            if self.get_brake_distance() >= dist_to_intersection:  ## MAKE DECISION        
                 return True
                 
         return False
@@ -417,6 +409,7 @@ class AutonomousAgent:
 
         if self.cur_goal % 2 == 1: 
             self.in_decision = False
+            self.set_decision(False)
             self.update_intersection()
         self.update_current_road()
 
